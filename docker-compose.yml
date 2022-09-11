@@ -1,0 +1,46 @@
+version: '2'
+
+services:
+    nginx:
+        image: nginx:1.23.1
+        ports:
+            - "5555:80"
+        volumes:
+            - ./nginx_reverse_proxy.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./store/static/files:/static:ro
+        links:
+            - node
+
+    graphite:
+        image: graphiteapp/graphite-statsd:1.1.10-3
+        volumes:
+            - ./statsd.config.js:/opt/statsd/config.js
+            - ./graphite.storage-schemas.conf:/opt/graphite/conf/storage-schemas.conf
+        ports:
+            - "8090:80"
+            - "8125:8125/udp"
+            - "8126:8126"
+
+    grafana:
+        image: grafana/grafana:9.1.2
+        ports:
+            - "80:3000"
+        volumes:
+            - "grafana_config:/var/lib/grafana"
+
+    cadvisor:
+        image: gcr.io/cadvisor/cadvisor:v0.45.0
+        links:
+            - graphite
+        command: -storage_driver="statsd" -storage_driver_host="graphite:8125" -storage_driver_db="cadvisor" -storage_driver_buffer_duration="1s"
+        ports:
+            - "8080:8080"
+        volumes:
+            - "/:/rootfs:ro"
+            - "/var/run:/var/run:rw"
+            - "/sys:/sys:ro"
+            - "/var/lib/docker/:/var/lib/docker:ro"
+
+volumes:
+    grafana_config:
+        driver: local
