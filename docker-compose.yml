@@ -1,6 +1,11 @@
 version: '2'
 
 services:
+    node:
+        image: node-server:latest
+        volumes:
+            - .:/app
+
     nginx:
         image: nginx:1.23.1
         ports:
