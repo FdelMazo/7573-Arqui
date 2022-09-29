@@ -3,6 +3,8 @@ version: '2'
 services:
     node:
         image: node-server:latest
+        ports:
+            - "3000:3000"
         volumes:
             - .:/app
 
