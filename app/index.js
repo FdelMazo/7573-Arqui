@@ -26,6 +26,4 @@ app.get('/work', (req, res) => {
     res.status(200).send(r.toString())
 })
 
-app.listen(port, () => {
-    console.log(`Listening on port ${port}`)
-})
+app.listen(port, () => {})

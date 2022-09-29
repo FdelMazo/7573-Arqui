@@ -1,5 +1,5 @@
 
-default: up logs
+default: down up logs
 
 docker-image:
 	docker build -f ./app/Dockerfile -t "node-server:latest" .
