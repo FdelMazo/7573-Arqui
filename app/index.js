@@ -1,6 +1,9 @@
+const { default: axios } = require('axios');
 const express = require('express')
 const app = express()
 const port = 3000
+const url_sync = 'http://bbox:9090/'
+const url_async = 'http://bbox:9091/'
 
 // http://ajennings.net/blog/a-million-digits-of-pi-in-9-lines-of-javascript.html
 // http://ajennings.net/pi.html
@@ -24,6 +27,18 @@ app.get('/work', (req, res) => {
     const n_thousand_digits = req.query.n || 15
     const r = pi(n_thousand_digits * 1000).toString()
     res.status(200).send(r.toString())
+})
+
+app.get('/sync', (req, res) => {
+    axios.get(url_sync).then(res_service => {
+        res.status(200).send(`Res sync service\n ${res_service.data}\n`)
+    })
+})
+
+app.get('/async', (req, res) => {
+    axios.get(url_async).then(res_service => {
+        res.status(200).send(`Res async service\n ${res_service.data}\n`)
+    })
 })
 
 app.listen(port, () => {})

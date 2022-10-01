@@ -45,6 +45,11 @@ services:
             - "/var/run:/var/run:rw"
             - "/sys:/sys:ro"
             - "/var/lib/docker/:/var/lib/docker:ro"
+    
+    bbox:
+        image: arqsoft/bbox:202202.1
+        volumes:
+            - "./config.properties/:/opt/bbox/config.properties:ro"
 
 volumes:
     grafana_config:
