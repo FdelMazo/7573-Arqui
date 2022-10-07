@@ -1,0 +1,34 @@
+config:
+  environments:
+    node:
+      target: 'http://localhost:5555/node'
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-node"
+    node_replicated:
+      target: 'http://localhost:5555/node_replicated'
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-node-replicated"
+
+  pool: 50 # All HTTP requests from all virtual users will be sent over the same connections
+
+  phases:
+    - name: Ramp #Se acelera el ratio de llegada de los usuarios virtuales de 5 a 30 en 30 segundos
+      duration: 30
+      arrivalRate: 5
+      rampTo: 30
+    - name: Plain #Arrival rate de 30 usuarios virtuales por segundo durante 120 segundos
+      duration: 120
+      arrivalRate: 30
+    
+
+scenarios:
+  - name: sync
+    flow:
+      - get:
+          url: '/sync'
