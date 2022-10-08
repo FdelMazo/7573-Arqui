@@ -5,6 +5,7 @@ const app = express()
 const port = 3000
 const url_sync = 'http://bbox:9090/'
 const url_async = 'http://bbox:9091/'
+const random = Math.round(Math.random() * 100, 1)
 
 const sdc = new SDC({
     host: 'graphite',
@@ -38,14 +39,14 @@ const pi = (digits) => {
 
 app.get('/ping', (req, res) => {
     //metrics('ping')
-    res.status(200).send('pong\n')
+    res.status(200).send(`[${random}] pong\n`)
 })
 
 app.get('/work', (req, res) => {
     //metrics('work')
     const n_thousand_digits = req.query.n || 15
     const r = pi(n_thousand_digits * 1000).toString()
-    res.status(200).send(r.toString())
+    res.status(200).send(r.toString() + '\n')
 })
 
 app.get('/sync', (req, res) => {

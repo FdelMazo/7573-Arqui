@@ -7,7 +7,7 @@ services:
             - .:/app
         deploy:
             mode: replicated
-            replicas: 4
+            replicas: 5
 
     nginx:
         image: nginx:1.23.1
