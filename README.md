@@ -77,6 +77,10 @@ $ time curl "localhost:5555/work?n=100"
 - Vista componentes y conectos
 - Deberán generar sus propias métricas desde la app Node para ser enviadas al daemon de statsd. Como mínimo, deberán generar una métrica con la demora en responder de cada endpoint (vista desde Node). Este métrica deberá ser visualizada en un gráfico adicional, que estará correlacionado con los demás gráficos en el tiempo.
 
+Se utiliza Artillery para realizar pruebas de performance sobre los endpoints del servidor. Se realizaran estas pruebas para el caso de una unica replica del servidor y para el caso donde hay 5 replicas del mismo.
+
+La prueba para cada endpoint y para cada caso (una replica y multiples replicas) inicia en la fase de "Ramp", que dura 30 segundos, y consiste en enviar 5 requests por segundo inicialmente, pero ir aumentando la cantidad de requests por segundo hasta llegar a 30 requests por segundo. Luego de la fase de ramp, se inicia la fase "Plain" donde se mantiene una cantidad de requests por segundo constante de 30 requests por segundo durante 120 segundos. Luego de esto, se realiza una fase de "Cooldown", que dura 30 segundos, y consiste en ir disminuyendo la cantidad de requests por segundo hasta llegar a 5 requests por segundo.
+
 ## Servicio `bbox`
 
 ```
