@@ -5,6 +5,9 @@ services:
         image: node-server:latest
         volumes:
             - .:/app
+        deploy:
+            mode: replicated
+            replicas: 4
 
     nginx:
         image: nginx:1.23.1
