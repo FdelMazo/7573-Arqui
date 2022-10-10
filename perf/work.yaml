@@ -1,7 +1,7 @@
 config:
   environments:
     node:
-      target: 'http://localhost:5555/node'
+      target: 'http://localhost:5555'
       plugins:
         statsd:
           host: localhost
@@ -18,6 +18,8 @@ config:
   pool: 50 # All HTTP requests from all virtual users will be sent over the same connections
 
   phases:
+    - name: pause
+      pause: 10
     - name: Ramp
       duration: 30
       arrivalRate: 5
@@ -25,11 +27,8 @@ config:
     - name: Plain
       duration: 120
       arrivalRate: 30
-    - name: Cooldown
-      duration: 30
-      arrivalRate: 30
-      rampTo: 5
-    
+    - name: pause
+      pause: 10
 
 scenarios:
   - name: work

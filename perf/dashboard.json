@@ -394,7 +394,7 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "alias": "asPercent(stats.gauges.cadvisor.2c22-tp-1_node_1.memory_usage, 1952000000)",
+          "alias": "asPercent(stats.gauges.cadvisor.node.memory_usage, 1952000000)",
           "yaxis": 1
         },
         {
@@ -490,9 +490,24 @@
             "selected": true,
             "text": "artillery-node",
             "value": "artillery-node"
+          },
+          {
+            "selected": false,
+            "text": "artillery-node-replicated",
+            "value": "artillery-node-replicated"
+          },
+          {
+            "selected": false,
+            "text": "artillery-bbox-9090",
+            "value": "artillery-bbox-9090"
+          },
+          {
+            "selected": false,
+            "text": "artillery-bbox-9091",
+            "value": "artillery-bbox-9091"
           }
         ],
-        "query": "artillery-node",
+        "query": "artillery-node, artillery-node-replicated, artillery-bbox-9091, artillery-bbox-9090",
         "skipUrlSync": false,
         "type": "custom"
       },
@@ -500,8 +515,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "2c22-tp-1_node_1",
-          "value": "2c22-tp-1_node_1"
+          "text": "node",
+          "value": "node"
         },
         "error": null,
         "hide": 0,
@@ -512,18 +527,33 @@
         "options": [
           {
             "selected": true,
-            "text": "2c22-tp-1_node_1",
-            "value": "2c22-tp-1_node_1"
+            "text": "node",
+            "value": "node"
           },
           {
             "selected": false,
-            "text": "2c22-tp-1_node_2",
-            "value": "2c22-tp-1_node_2"
+            "text": "node_1",
+            "value": "node_1"
           },
           {
             "selected": false,
-            "text": "2c22-tp-1_node_3",
-            "value": "2c22-tp-1_node_3"
+            "text": "node_2",
+            "value": "node_2"
+          },
+          {
+            "selected": false,
+            "text": "node_3",
+            "value": "node_3"
+          },
+          {
+            "selected": false,
+            "text": "node_4",
+            "value": "node_4"
+          },
+          {
+            "selected": false,
+            "text": "node_5",
+            "value": "node_5"
           },
           {
             "selected": false,
@@ -551,7 +581,7 @@
             "value": "2c22-tp-1_bbox_1"
           }
         ],
-        "query": "2c22-tp-1_node_1, 2c22-tp-1_node_2, 2c22-tp-1_node_3, 2c22-tp-1_cadvisor_1, 2c22-tp-1_grafana_1, 2c22-tp-1_graphite_1,  2c22-tp-1_nginx_1, 2c22-tp-1_bbox_1",
+        "query": "node, node_1, node_2, node_3, 2c22-tp-1_cadvisor_1, 2c22-tp-1_grafana_1, 2c22-tp-1_graphite_1,  2c22-tp-1_nginx_1, 2c22-tp-1_bbox_1",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
@@ -588,7 +618,7 @@
     ]
   },
   "timezone": "",
-  "title": "Main dashboard",
+  "title": "7573-Arqui-Ladrillo",
   "uid": "arxIPammk",
   "version": 3
 }
