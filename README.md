@@ -97,22 +97,33 @@ Las herramientas para este análisis son las mismas que usaron en la Sección 1.
 
 ## Caso de estudio: Sistema de inscripciones
 
-```
-Utilizando las herramientas y procedimientos de las secciones anteriores, deberán simular el comportamiento bajo carga de un sistema de inscripciones a materias (similar al SIU Guaraní).
+¿Cómo debería comportarse un sistema de inscripciones facultativo? Hagamos un par de suposiciones, y centremonos en intentar simular un sistema de inscripciones para FIUBA.
 
-Nos concentraremos en simular la inscripción a una o más materias. Desde el punto de vista del usuario, implica:
+¿Con cuanta carga estamos trabajando? Basado en algunas fuentes[^1] podemos tomar como supuestos para nuestro sistema simulado que vamos a trabajar con una carga de 10 mil alumnos. Cada uno de estos alumnos se inscribirán en entre 3 y 5 materias.
 
-    Iniciar sesión
-    Seleccionar una carrera
-    Inscribirse (n veces)
-        Ver la lista de materias en las que está inscripto
-        Ver la lista de materias disponibles
-        Inscribirse en una materia
-    Cerrar sesión
+Desde el punto de vista del usuario:
 
-Para implementar este flujo, herramientas como Artillery (usando scenarios) o JMeter nos permiten simularlo.
+- Iniciar sesión
+- Seleccionar una carrera
+- Inscribirse a n materias:
+    - Ver la lista de materias en las que está inscripto
+    - Ver la lista de materias disponibles
+    - Inscribirse en una materia
+- Cerrar sesión
 
-Deberán establecer ciertas hipótesis respecto de las dimensiones del problema. Por ejemplo, cantidad de alumnos, cantidad de prioridades y su segmentación en franjas horarias, etc. También deberán modelar el tipo de comportamiento de cada endpoint, y jugar con los tiempos de demora que cada uno debería (razonablemente) tener.
+Desde el punto de vista del sistema:
 
-Con el escenario planteado, generar la carga, graficar puntos interesantes y luego analizar el comportamiento que el sistema debería exhibir.
-```
+- A nuestros 10 mil alumnos los dividimos uniformemente en franjas horarias de 30 minutos (las prioridades), en una semana laboral:
+    - De 9hs a 18hs de un día tenemos 18 franjas
+    - De lunes a viernes tenemos 18 * 5 => 90 franjas
+    - 10 mil alumnos en 90 franjas => ~100 alumnos activos en el sistema en cualquier (media) hora dada[^2]
+
+- Asumiendo la ansiedad del alumnado, vamos a asumir que, si bien hay 30 minutos para inscribirse, la mayoría de los alumnos (75%) de una franja horaria se inscribiran en los primeros 10 minutos de la franja, y el resto lo hará mas relajadamente en lo que queda de la media hora.
+
+Habiendo marcado todas estas suposiciones e hipótesis, lo que pretendemos ver en nuestros gráficos es un pico de _hits_ al endpoint de `/iniciar_sesion` cada media hora, y uno similar de `n` (3~5) _hits_ a `/inscribir_materia`.
+
+<!-- Este scenario esta modelado en `perf/siu.yaml`. -->
+
+[^1]: [Blog de Nico Paez](https://blog.nicopaez.com/2021/05/23/sobre-las-estadisticas-de-inscriptos-en-fiuba/) - [Padrón de Estudiantes Regulares 2022](https://cms.fi.uba.ar/uploads/PADRON_DEFINITIVO_ESTUDIANTES_2022_MESAS_1_429d2abc05.pdf) - [Infobae](https://www.infobae.com/educacion/2022/05/23/63-mil-anotados-al-cbc-de-la-uba-cuales-fueron-las-carreras-mas-elegidas-las-que-mas-crecieron-y-cayeron/)
+
+[^2]: No vamos a simular alumnos entrando al sistema fuera de su franja horaria (problema conocido del SIU Guaraní)
