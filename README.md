@@ -103,27 +103,38 @@ Las herramientas para este análisis son las mismas que usaron en la Sección 1.
 
 Desde el punto de vista del usuario:
 
-- Iniciar sesión
-- Seleccionar una carrera
+- Iniciar sesión - `/iniciar_sesion`
+- Seleccionar una carrera - `/seleccionar_carrera`
 - Inscribirse a n materias:
-    - Ver la lista de materias en las que está inscripto
-    - Ver la lista de materias disponibles
-    - Inscribirse en una materia
-- Cerrar sesión
+    - Ver la lista de materias en las que está inscripto - `/ver_materias_inscriptas`
+    - Ver la lista de materias disponibles - `/ver_materias_disponibles`
+    - Inscribirse en una materia - `/inscripcion`
+- Cerrar sesión[^2] - `/cerrar_sesion`
 
 Desde el punto de vista del sistema:
 
 - A nuestros 10 mil alumnos los dividimos uniformemente en franjas horarias de 30 minutos (las prioridades), en una semana laboral:
     - De 9hs a 18hs de un día tenemos 18 franjas
     - De lunes a viernes tenemos 18 * 5 => 90 franjas
-    - 10 mil alumnos en 90 franjas => ~100 alumnos activos en el sistema en cualquier (media) hora dada[^2]
+    - 10 mil alumnos en 90 franjas => ~100 alumnos activos en el sistema en cualquier (media) hora dada[^3]
 
 - Asumiendo la ansiedad del alumnado, vamos a asumir que, si bien hay 30 minutos para inscribirse, la mayoría de los alumnos (75%) de una franja horaria se inscribiran en los primeros 10 minutos de la franja, y el resto lo hará mas relajadamente en lo que queda de la media hora.
 
-Habiendo marcado todas estas suposiciones e hipótesis, lo que pretendemos ver en nuestros gráficos es un pico de _hits_ al endpoint de `/iniciar_sesion` cada media hora, y uno similar de `n` (3~5) _hits_ a `/inscribir_materia`.
+Habiendo marcado todas estas suposiciones e hipótesis, lo que pretendemos es:
+
+- Ver en nuestros gráficos picos de _hits_ a los distintos endpoints al comienzo de cada franja horaria y luego teniendo hits a un ritmo decente. Ningún tipo de hit en hora no laboral.
+- Los endpoints simularlos como:
+    - `/iniciar_sesion`: Un endpoint con trabajo liviano (consiste principalmente de chequear la contraseña del usuario)
+    - `/seleccionar_carrera`: Un endpoint inmediato
+    - `/ver_materias_inscriptas`: Un endpoint inmediato
+    - `/ver_materias_disponibles`: Un endpoint inmediato
+    - `/inscripcion`: Un endpoint con trabajo mediano, ya que debe ser una acción atómica para proveer control de concurrencia, para evitar que se anoten más alumnos que el cupo disponible
+    - `/cerrar_sesion`: Un endpoint inmediato
 
 <!-- Este scenario esta modelado en `perf/siu.yaml`. -->
 
 [^1]: [Blog de Nico Paez](https://blog.nicopaez.com/2021/05/23/sobre-las-estadisticas-de-inscriptos-en-fiuba/) - [Padrón de Estudiantes Regulares 2022](https://cms.fi.uba.ar/uploads/PADRON_DEFINITIVO_ESTUDIANTES_2022_MESAS_1_429d2abc05.pdf) - [Infobae](https://www.infobae.com/educacion/2022/05/23/63-mil-anotados-al-cbc-de-la-uba-cuales-fueron-las-carreras-mas-elegidas-las-que-mas-crecieron-y-cayeron/)
 
-[^2]: No vamos a simular alumnos entrando al sistema fuera de su franja horaria (problema conocido del SIU Guaraní)
+[^2]: En previas versiones del SIU Guaraní habia un pequeño _flush_ de información al cerrar sesión, haciendo que sea un proceso más lento de lo que uno intuiría. Esto no lo vamos a modelar!
+
+[^3]: No vamos a simular alumnos entrando al sistema fuera de su franja horaria (problema conocido del SIU Guaraní)
