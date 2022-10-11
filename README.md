@@ -2,9 +2,11 @@
 
 ## Servicios
 
-En este trabajo vamos a comparar dos servicios distintos, con los mismos endpoints. Ambos servicios se acceden a través de nginx y ambos están implementados en Node.js; su unica diferencia es que el primer servicio tiene solo un proceso, mientras que el segundo esta replicado en múltiples contenedores (configurado en 5 réplicas).
+En esta primera sección del trabajo práctico comparamos, mediante distintos escenarios de pruebas, los comportamientos de dos servicios funcionalmente iguales, pero con distintas configuraciones de deployment. Ambos servicios se acceden a través de nginx y están implementados en Node.js; su única diferencia es que el primero tiene sólo un proceso corriendo, mientras que el segundo está replicado en múltiples contenedores (configurado en 5 réplicas) y con un balanceador de carga a nivel de nginx.
 
-Al levantar la aplicación, tenemos a nginx corriendo en `localhost:5555`. El primer servicio esta sobre `/`, y el segundo en `/many`. Los endpoints que proveen son:
+Para la obtención de información hemos utilizado distintas herramientas (Artillery, StatsD, CAdvisor, Graphite y Grafana) para armar escenarios de carga, obtener distintos tipos de métricas y poder visualizarlas a lo largo de una ventana de tiempo, de manera tal de poder analizarlas y sacar conclusiones.  
+
+En primer lugar, al levantar la aplicación tenemos a nginx corriendo en `localhost:5555`. El primer servicio está sobre `/`, y el segundo en `/many`. Los endpoints que proveen son:
 
 - `/ping`: Un simple healtcheck. Devuelve un número identificador del proceso, para poder confirmar que el servicio replicado esta contestando desde distintos lugares.
 - `/work?n=15`: Una manera de representar cálculos pesados. Computa y devuelve los primeros n-mil dígitos de pi, siendo `n` configurable.
@@ -12,7 +14,7 @@ Al levantar la aplicación, tenemos a nginx corriendo en `localhost:5555`. El pr
 - `/async`: Invoca el servicio asincrónico `bbox`
 
 ```zsh
-$ make up # levantamos los múltiples contenedores con docker-compose
+$ make up # levantamos los múltiples contenedores con make up, que internamente llama a docker-compose
 Creating network "7573-arqui_default" with the default driver
 Creating 7573-arqui_grafana_1  ... done
 Creating 7573-arqui_bbox_1     ... done
@@ -57,7 +59,7 @@ Hello world!
 $ curl "localhost:5555/async"
 Hello world!
 
-# Mostremos un poco cuanto trabaja el calculador de Pi
+# Mostremos un poco cuánto trabaja el calculador de Pi
 # mil digitos -> menos de un segundo
 $ time curl "localhost:5555/work?n=1"
 0,01s user 0,01s system 50% cpu 0,037 total
