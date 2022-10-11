@@ -1,5 +1,6 @@
 FROM node:16
-COPY app /
-WORKDIR /app
+RUN mkdir /opt/app
+WORKDIR /opt/app
+COPY app/index.js app/package.json app/package-lock.json ./
 RUN npm install
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["node", "index.js"]
