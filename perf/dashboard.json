@@ -3,33 +3,39 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1616712956688,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Graphite",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
+      "datasource": {
+        "type": "graphite",
+        "uid": "IQhRHnIVk"
       },
       "fill": 7,
       "fillGradient": 0,
@@ -63,7 +69,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.10",
+      "pluginVersion": "9.1.2",
       "pointradius": 5,
       "points": true,
       "renderer": "flot",
@@ -73,6 +79,10 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "IQhRHnIVk"
+          },
           "refCount": 0,
           "refId": "B",
           "target": "aliasByMetric(stats.gauges.$server.scenarioCounts.*)",
@@ -80,9 +90,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Scenarios launched (stacked)",
       "tooltip": {
         "shared": true,
@@ -91,9 +99,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -102,22 +108,16 @@
           "format": "rps",
           "label": "",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -131,12 +131,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Graphite",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
+      "datasource": {
+        "type": "graphite",
+        "uid": "IQhRHnIVk"
       },
       "fill": 7,
       "fillGradient": 0,
@@ -170,7 +167,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.10",
+      "pluginVersion": "9.1.2",
       "pointradius": 5,
       "points": true,
       "renderer": "flot",
@@ -180,23 +177,33 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "IQhRHnIVk"
+          },
           "refId": "B",
           "target": "alias(sumSeries(stats.gauges.$server.errors.*), 'Errored')",
           "textEditor": true
         },
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "IQhRHnIVk"
+          },
           "refId": "A",
           "target": "alias(stats.gauges.$server.requestsCompleted, 'Completed')"
         },
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "IQhRHnIVk"
+          },
           "refId": "C",
           "target": "alias(stats.gauges.$server.pendingRequests, 'Pending')"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Requests state (stacked)",
       "tooltip": {
         "shared": true,
@@ -205,33 +212,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -239,12 +237,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Graphite",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
+      "datasource": {
+        "type": "graphite",
+        "uid": "IQhRHnIVk"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -279,7 +274,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.10",
+      "pluginVersion": "9.1.2",
       "pointradius": 5,
       "points": true,
       "renderer": "flot",
@@ -289,20 +284,26 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "IQhRHnIVk"
+          },
           "refCount": 0,
           "refId": "C",
           "target": "alias(stats.gauges.$server.scenarioDuration.max, 'Upper')"
         },
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "IQhRHnIVk"
+          },
           "refCount": 0,
           "refId": "B",
           "target": "alias(stats.gauges.$server.scenarioDuration.median, 'Median')"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Response time (client-side)",
       "tooltip": {
         "shared": true,
@@ -311,9 +312,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -322,22 +321,17 @@
           "format": "ms",
           "label": "",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -347,12 +341,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Graphite",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
+      "datasource": {
+        "type": "graphite",
+        "uid": "IQhRHnIVk"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -388,7 +379,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.10",
+      "pluginVersion": "9.1.2",
       "pointradius": 5,
       "points": true,
       "renderer": "flot",
@@ -411,6 +402,10 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "IQhRHnIVk"
+          },
           "hide": false,
           "refCount": 0,
           "refId": "C",
@@ -418,6 +413,10 @@
           "textEditor": false
         },
         {
+          "datasource": {
+            "type": "graphite",
+            "uid": "IQhRHnIVk"
+          },
           "hide": false,
           "refCount": 0,
           "refId": "B",
@@ -425,9 +424,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Resources",
       "tooltip": {
         "shared": true,
@@ -436,53 +433,42 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "percent",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 26,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
-        "allValue": null,
         "current": {
           "selected": false,
           "text": "artillery-node",
           "value": "artillery-node"
         },
-        "error": null,
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "server",
         "options": [
@@ -512,76 +498,68 @@
         "type": "custom"
       },
       {
-        "allValue": null,
         "current": {
           "selected": false,
-          "text": "node",
-          "value": "node"
+          "text": "7573-arqui_node_1",
+          "value": "7573-arqui_node_1"
         },
-        "error": null,
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "container",
         "options": [
           {
             "selected": true,
-            "text": "node",
-            "value": "node"
+            "text": "7573-arqui_node_1",
+            "value": "7573-arqui_node_1"
           },
           {
             "selected": false,
-            "text": "node_1",
-            "value": "node_1"
+            "text": "7573-arqui_node_2",
+            "value": "7573-arqui_node_2"
           },
           {
             "selected": false,
-            "text": "node_2",
-            "value": "node_2"
+            "text": "7573-arqui_node_3",
+            "value": "7573-arqui_node_3"
           },
           {
             "selected": false,
-            "text": "node_3",
-            "value": "node_3"
+            "text": "7573-arqui_node_4",
+            "value": "7573-arqui_node_4"
           },
           {
             "selected": false,
-            "text": "node_4",
-            "value": "node_4"
+            "text": "7573-arqui_node_5",
+            "value": "7573-arqui_node_5"
           },
           {
             "selected": false,
-            "text": "node_5",
-            "value": "node_5"
+            "text": "7573-arqui_cadvisor_1",
+            "value": "7573-arqui_cadvisor_1"
           },
           {
             "selected": false,
-            "text": "2c22-tp-1_cadvisor_1",
-            "value": "2c22-tp-1_cadvisor_1"
+            "text": "7573-arqui_grafana_1",
+            "value": "7573-arqui_grafana_1"
           },
           {
             "selected": false,
-            "text": "2c22-tp-1_grafana_1",
-            "value": "2c22-tp-1_grafana_1"
+            "text": "7573-arqui_graphite_1",
+            "value": "7573-arqui_graphite_1"
           },
           {
             "selected": false,
-            "text": "2c22-tp-1_graphite_1",
-            "value": "2c22-tp-1_graphite_1"
+            "text": "7573-arqui_nginx_1",
+            "value": "7573-arqui_nginx_1"
           },
           {
             "selected": false,
-            "text": "2c22-tp-1_nginx_1",
-            "value": "2c22-tp-1_nginx_1"
-          },
-          {
-            "selected": false,
-            "text": "2c22-tp-1_bbox_1",
-            "value": "2c22-tp-1_bbox_1"
+            "text": "7573-arqui_bbox_1",
+            "value": "7573-arqui_bbox_1"
           }
         ],
-        "query": "node, node_1, node_2, node_3, 2c22-tp-1_cadvisor_1, 2c22-tp-1_grafana_1, 2c22-tp-1_graphite_1,  2c22-tp-1_nginx_1, 2c22-tp-1_bbox_1",
+        "query": "7573-arqui_node_1, 7573-arqui_node_2, 7573-arqui_node_3, 7573-arqui_node_4, 7573-arqui_node_5, 7573-arqui_cadvisor_1, 7573-arqui_grafana_1, 7573-arqui_graphite_1, 7573-arqui_nginx_1, 7573-arqui_bbox_1",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
@@ -620,5 +598,6 @@
   "timezone": "",
   "title": "7573-Arqui-Ladrillo",
   "uid": "arxIPammk",
-  "version": 3
+  "version": 2,
+  "weekStart": ""
 }
