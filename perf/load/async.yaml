@@ -34,7 +34,7 @@ config:
 
 
 scenarios:
-  - name: sync
+  - name: async
     flow:
       - get:
-          url: '/sync'
+          url: '/async'
