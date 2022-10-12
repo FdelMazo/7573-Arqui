@@ -50,7 +50,7 @@ services:
         image: gcr.io/cadvisor/cadvisor:v0.45.0
         links:
             - graphite
-        command: -storage_driver="statsd" -storage_driver_host="graphite:8125" -storage_driver_db="cadvisor" -storage_driver_buffer_duration="10s"
+        command: -storage_driver="statsd" -storage_driver_host="graphite:8125" -storage_driver_db="cadvisor" -storage_driver_buffer_duration="1s"
         ports:
             - "8080:8080"
         volumes:
