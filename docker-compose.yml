@@ -29,7 +29,7 @@ services:
             - "8125:8125/udp"
             - "8126:8126"
 
-    graphite_node:
+    graphite2:
         image: graphiteapp/graphite-statsd:1.1.10-3
         volumes:
             - ./statsd.config.js:/opt/statsd/config.js

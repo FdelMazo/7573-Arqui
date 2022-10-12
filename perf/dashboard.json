@@ -27,122 +27,7 @@
   "id": 1,
   "links": [],
   "liveNow": false,
-    "panels": [
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Graphite",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 7,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 7
-      },
-      "height": "250px",
-      "hiddenSeries": false,
-      "id": 6,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "hideEmpty": true,
-        "max": true,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "sideWidth": 250,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "connected",
-      "options": {
-        "alertThreshold": true,
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.1",
-      "pointradius": 5,
-      "points": true,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
-      "targets": [
-        {
-          "hide": true,
-          "refCount": 0,
-          "refId": "A",
-          "target": "alias(stats.gauges.$server.rps.count, 'Requests attempted')",
-          "textEditor": false
-        },
-        {
-          "hide": true,
-          "refCount": 0,
-          "refId": "C",
-          "target": "alias(stats.gauges.$server.requestsCompleted, 'Requests completed')"
-        },
-        {
-          "refCount": 0,
-          "refId": "B",
-          "target": "aliasByMetric(stats.gauges.$server.scenariosCreated)",
-          "textEditor": false
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Scenarios created (stacked)",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "rps",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
+  "panels": [
     {
       "aliasColors": {},
       "bars": false,
@@ -236,6 +121,110 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Graphite",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 7,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "height": "250px",
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "max": true,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 250,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.1.2",
+      "pointradius": 5,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "hide": true,
+          "refCount": 0,
+          "refId": "A",
+          "target": "alias(stats.gauges.$server.rps.count, 'Requests attempted')",
+          "textEditor": false
+        },
+        {
+          "hide": true,
+          "refCount": 0,
+          "refId": "C",
+          "target": "alias(stats.gauges.$server.requestsCompleted, 'Requests completed')"
+        },
+        {
+          "refCount": 0,
+          "refId": "B",
+          "target": "aliasByMetric(stats.gauges.$server.scenariosCreated)",
+          "textEditor": false
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Scenarios created (stacked)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "rps",
+          "label": "",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
       "aliasColors": {
         "Completed": "#7EB26D",
         "Errored": "#BF1B00",
@@ -256,7 +245,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 14
       },
       "height": "250",
       "hiddenSeries": false,
@@ -359,10 +348,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
-        "w": 24,
+        "h": 9,
+        "w": 12,
         "x": 0,
-        "y": 14
+        "y": 21
       },
       "height": "250px",
       "hiddenSeries": false,
@@ -450,6 +439,108 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "graphite",
+        "uid": "xlCCySIVk"
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 21
+      },
+      "height": "250px",
+      "hiddenSeries": false,
+      "id": 7,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": false,
+        "max": true,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 250,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.1.2",
+      "pointradius": 5,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "xlCCySIVk"
+          },
+          "refCount": 0,
+          "refId": "C",
+          "target": "alias(stats.timers.requests_97.response_time.GET_work.upper, 'Upper')"
+        },
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "xlCCySIVk"
+          },
+          "refCount": 0,
+          "refId": "B",
+          "target": "alias(stats.timers.requests_97.response_time.GET_work.median, 'Median')"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Response time (server-side)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "label": "",
+          "logBase": 1,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
       "aliasColors": {
         "Memory": "#EAB839"
       },
@@ -466,7 +557,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 30
       },
       "height": "250px",
       "hiddenSeries": false,
@@ -614,7 +705,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "7573-arqui_node_1",
           "value": "7573-arqui_node_1"
         },
@@ -713,6 +804,6 @@
   "timezone": "",
   "title": "7573-Arqui-Ladrillo",
   "uid": "arxIPammk",
-  "version": 2,
+  "version": 8,
   "weekStart": ""
 }

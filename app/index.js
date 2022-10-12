@@ -8,7 +8,7 @@ const url_async = 'http://bbox:9091/'
 const random = Math.round(Math.random() * 100, 1)
 
 const sdc = new SDC({
-    host: 'graphite_node',
+    host: 'graphite2',
     port: 8125
 })
 
