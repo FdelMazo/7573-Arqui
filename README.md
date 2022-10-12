@@ -100,34 +100,147 @@ Es un simple healthcheck por lo que su procesamiento es mínimo, por ende se esp
 
 ### Un nodo  
 
+### Load Testing
+
 **Escenarios creados**
-![img1](test_runs/load/ping/node/scenarios_created.png)
+![](test_runs/load/ping/node/scenarios_created.png)
 Se aprecia el warm up con una duración de 30 segundos, seguido del ramp up durante otros 30 segundos, donde la cantidad de requests aumenta de 5 hasta llegar a 30 requests por segundo, dando lugar a la meseta típica de una prueba de carga, donde se mantiene la frecuencia de requests hasta el final.
 En el eje y se ven los valores aumentados en un factor de 10 dado que se muestran los requests por segundo en los últimos 10 segundos.
 
 **Requests completados, pendientes y fallidos**
-![img1](test_runs/load/ping/node/requests_state.png)
+![](test_runs/load/ping/node/requests_state.png)
 En este caso todos los requests fueron completados con éxitos y no hubo errores ni pendientes, lo que se debe al bajo procesamiento que tiene este endpoint.
 
 **Tiempo de respuesta visto por el cliente**
-![img1](test_runs/load/ping/node/response_time_client.png)
+![](test_runs/load/ping/node/response_time_client.png)
 
 **Tiempo de respuesta visto por el servicio**
-![img1](test_runs/load/ping/node/response_time_server.png)
+![](test_runs/load/ping/node/response_time_server.png)
 
 Se pueden apreciar los tiempos de respuesta tanto de la perspectiva del cliente como del servicio y, a su vez, para cada uno se tiene la mediana y el máximo.
 En ambos gráficos se observa que la mediana tiene un valor bajo, lo cual se corresponde con el bajo procesamiento que tiene el endpoint ping.  
 Por otro lado, el máximo del lado del servicio también se condice con el máximo del lado del cliente, que van desfasados 10 segundos porque el servicio pushea la métrica antes que el cliente. Congruentemente, mirando el gráfico de recursos se termina de concluir que el máximo uso de CPU se produce durante el pico de tiempo de respuesta.
 
 **Recursos utilizados**
-![img1](test_runs/load/ping/node/resources.png)
+![](test_runs/load/ping/node/resources.png)
 Durante el transcurso de toda la prueba, el uso de CPU fluctúa, pero se mantiene bajo y en concordancia con el análisis de los gráficos anteriores. En cuanto a la memoria, se mantiene constante puesto que no se realizan operaciones de escritura.
-
-### Load Testing
 
 ### Replicado (Cinco nodos)
 ### Load Testing
 
+**Requests completados, pendientes y fallidos**
+![](test_runs/load/ping/many/requests_state.png)
+
+**Tiempo de respuesta visto por el cliente**
+![](test_runs/load/ping/many/response_time_client.png)
+
+**Tiempo de respuesta visto por el servicio**
+![](test_runs/load/ping/many/response_time_server.png)
+
+**Recursos utilizados**
+![](test_runs/load/ping/many/resources_node_4.png)
+
+## Work
+
+### Un nodo  
+
+### Load Testing
+
+**Requests completados, pendientes y fallidos**
+![](test_runs/load/work/node/requests_state.png)
+
+**Tiempo de respuesta visto por el cliente**
+![](test_runs/load/work/node/response_time_client.png)
+
+**Tiempo de respuesta visto por el servicio**
+![](test_runs/load/work/node/response_time_server.png)
+
+**Recursos utilizados**
+![](test_runs/load/work/node/resources.png)
+
+
+### Replicado (Cinco nodos)
+### Load Testing
+
+**Requests completados, pendientes y fallidos**
+![](test_runs/load/work/many/requests_state.png)
+
+**Tiempo de respuesta visto por el cliente**
+![](test_runs/load/work/many/response_time_client.png)
+
+**Tiempo de respuesta visto por el servicio**
+![](test_runs/load/work/many/response_time_server.png)
+
+**Recursos utilizados**
+![](test_runs/load/work/many/resources_node_5.png)
+
+## Sync
+
+### Un nodo  
+
+### Load Testing
+
+**Requests completados, pendientes y fallidos**
+![](test_runs/load/sync/node/requests_state.png)
+
+**Tiempo de respuesta visto por el cliente**
+![](test_runs/load/sync/node/response_time_client.png)
+
+**Tiempo de respuesta visto por el servicio**
+![](test_runs/load/sync/node/response_time_server.png)
+
+**Recursos utilizados**
+![](test_runs/load/sync/node/resources.png)
+
+
+### Replicado (Cinco nodos)
+### Load Testing
+
+**Requests completados, pendientes y fallidos**
+![](test_runs/load/sync/many/requests_state.png)
+
+**Tiempo de respuesta visto por el cliente**
+![](test_runs/load/sync/many/response_time_client.png)
+
+**Tiempo de respuesta visto por el servicio**
+![](test_runs/load/sync/many/response_time_server.png)
+
+**Recursos utilizados**
+![](test_runs/load/sync/many/resources_node_5.png)
+
+## Async
+
+### Un nodo  
+
+### Load Testing
+
+**Requests completados, pendientes y fallidos**
+![](test_runs/load/async/node/requests_state.png)
+
+**Tiempo de respuesta visto por el cliente**
+![](test_runs/load/async/node/response_time_client.png)
+
+**Tiempo de respuesta visto por el servicio**
+![](test_runs/load/async/node/response_time_server.png)
+
+**Recursos utilizados**
+![](test_runs/load/async/node/resources.png)
+
+
+### Replicado (Cinco nodos)
+### Load Testing
+
+**Requests completados, pendientes y fallidos**
+![](test_runs/load/async/many/requests_state.png)
+
+**Tiempo de respuesta visto por el cliente**
+![](test_runs/load/async/many/response_time_client.png)
+
+**Tiempo de respuesta visto por el servicio**
+![](test_runs/load/async/many/response_time_server.png)
+
+**Recursos utilizados**
+![](test_runs/load/async/many/resources_node_5.png)
 
 ## Vista Components & Connectors
 
