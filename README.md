@@ -274,12 +274,10 @@ Las herramientas para este análisis son las mismas que usaron en la Sección 1.
 
 ¿Con cuanta carga estamos trabajando? Basado en algunas fuentes[^1] podemos tomar como supuestos para nuestro sistema simulado que vamos a trabajar con una carga de 10 mil alumnos. Cada uno de estos alumnos se inscribirán en entre 3 y 5 materias.
 
-Desde el punto de vista del usuario:
+Desde el punto de vista del usuario, secuencialmente:
 
 - Iniciar sesión - `/iniciar_sesion`
-- Seleccionar una carrera - `/seleccionar_carrera`
 - Inscribirse a n materias:
-    - Ver la lista de materias en las que está inscripto - `/ver_materias_inscriptas`
     - Ver la lista de materias disponibles - `/ver_materias_disponibles`
     - Inscribirse en una materia - `/inscripcion`
 - Cerrar sesión[^2] - `/cerrar_sesion`
@@ -298,13 +296,11 @@ Habiendo marcado todas estas suposiciones e hipótesis, lo que pretendemos es:
 - Ver en nuestros gráficos picos de _hits_ a los distintos endpoints al comienzo de cada franja horaria y luego teniendo hits a un ritmo decente. Ningún tipo de hit en hora no laboral.
 - Los endpoints simularlos como:
     - `/iniciar_sesion`: Un endpoint con trabajo liviano (consiste principalmente de chequear la contraseña del usuario)
-    - `/seleccionar_carrera`: Un endpoint inmediato
-    - `/ver_materias_inscriptas`: Un endpoint inmediato
-    - `/ver_materias_disponibles`: Un endpoint inmediato
+    - `/ver_materias_disponibles`: Un endpoint sincrónico que depende de un servicio externo (preguntarle a la base de datos)
     - `/inscripcion`: Un endpoint con trabajo mediano, ya que debe ser una acción atómica para proveer control de concurrencia, para evitar que se anoten más alumnos que el cupo disponible
     - `/cerrar_sesion`: Un endpoint inmediato
 
-<!-- Este scenario esta modelado en `perf/siu.yaml`. -->
+Este escenario planteado se puede ver en `perf/siu.yaml`.
 
 [^1]: [Blog de Nico Paez](https://blog.nicopaez.com/2021/05/23/sobre-las-estadisticas-de-inscriptos-en-fiuba/) - [Padrón de Estudiantes Regulares 2022](https://cms.fi.uba.ar/uploads/PADRON_DEFINITIVO_ESTUDIANTES_2022_MESAS_1_429d2abc05.pdf) - [Infobae](https://www.infobae.com/educacion/2022/05/23/63-mil-anotados-al-cbc-de-la-uba-cuales-fueron-las-carreras-mas-elegidas-las-que-mas-crecieron-y-cayeron/)
 
