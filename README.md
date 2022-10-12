@@ -130,6 +130,8 @@ Durante el transcurso de toda la prueba, el uso de CPU fluctúa, pero se mantien
 
 **Requests completados, pendientes y fallidos**
 ![](test_runs/load/ping/many/requests_state.png)
+De igual manera que con un solo nodo, en este caso se completan todas las requests que van llegando a cada segundo, lo cual es esperado por la simplicidad del endpoint.
+
 
 **Tiempo de respuesta visto por el cliente**
 ![](test_runs/load/ping/many/response_time_client.png)
@@ -137,8 +139,13 @@ Durante el transcurso de toda la prueba, el uso de CPU fluctúa, pero se mantien
 **Tiempo de respuesta visto por el servicio**
 ![](test_runs/load/ping/many/response_time_server.png)
 
+Los tiempos de respuesta se mantienen muy bajos durante toda la prueba y coherentes entre lo que figura del lado del cliente y del lado del servidor, puesto que los picos se condicen.
+
+
 **Recursos utilizados**
 ![](test_runs/load/ping/many/resources_node_4.png)
+
+En este caso se muestran los recursos utilizados por un sólo nodo, los cuales se mantienen muy bajos a pesar de la carga y nuevamente se debe a la naturaleza simple del endpoint.
 
 ## Work
 
