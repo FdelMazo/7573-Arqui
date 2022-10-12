@@ -28,6 +28,9 @@ config:
     - name: Plain
       duration: 120
       arrivalRate: 30
+    - name: Cleanup
+      duration: 30
+      arrivalRate: 0
 
 
 scenarios:
