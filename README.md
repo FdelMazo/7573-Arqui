@@ -73,7 +73,7 @@ $ time curl "localhost:5555/work?n=100"
 
 ## Performance Testing
 
-Para poder llevar a cabo la comparación entre servicios hemos realizado las siguientes pruebas de performance:
+Para poder llevar a cabo la comparación entre servicios hemos realizado pruebas de carga y de estrés.
 ### Load testing
 
 Se incrementa la carga constantemente en el sistema hasta llegar a un valor umbral.  
@@ -94,12 +94,42 @@ Para cada endpoint se corren las siguientes etapas:
 - https://www.softwaretestingclass.com/what-is-performance-testing/
 - Explicar y mostrar ejemplos de artillery
 - Pelar grafos de grafana y demas
-- Vista componentes y conectos
-- Deberán generar sus propias métricas desde la app Node para ser enviadas al daemon de statsd. Como mínimo, deberán generar una métrica con la demora en responder de cada endpoint (vista desde Node). Este métrica deberá ser visualizada en un gráfico adicional, que estará correlacionado con los demás gráficos en el tiempo.
 
-Se utiliza Artillery para realizar pruebas de performance sobre los endpoints del servidor. Se realizaran estas pruebas para el caso de una unica replica del servidor y para el caso donde hay 5 replicas del mismo.
+## Ping
+Es un simple healthcheck por lo que su procesamiento es mínimo, por ende se espera un tiempo de respuesta bajo y un bajo consumo de memoria y cpu.
 
-La prueba para cada endpoint y para cada caso (una replica y multiples replicas) inicia en la fase de "Ramp", que dura 30 segundos, y consiste en enviar 5 requests por segundo inicialmente, pero ir aumentando la cantidad de requests por segundo hasta llegar a 30 requests por segundo. Luego de la fase de ramp, se inicia la fase "Plain Intensivo" donde se mantiene una cantidad de requests por segundo constante de 30 requests por segundo durante 120 segundos. Luego de esto, se realiza una fase de "Plain Quite", que dura 30 segundos, y consiste en mantener una cantidad de requests por segundo constante menor a la etapa intensiva durante 30 segundos.
+### Un nodo  
+
+**Escenarios creados**
+![img1](test_runs/load/ping/node/scenarios_created.png)
+Se aprecia el warm up con una duración de 30 segundos, seguido del ramp up durante otros 30 segundos, donde la cantidad de requests aumenta de 5 hasta llegar a 30 requests por segundo, dando lugar a la meseta típica de una prueba de carga, donde se mantiene la frecuencia de requests hasta el final.
+En el eje y se ven los valores aumentados en un factor de 10 dado que se muestran los requests por segundo en los últimos 10 segundos.
+
+**Requests completados, pendientes y fallidos**
+![img1](test_runs/load/ping/node/requests_state.png)
+En este caso todos los requests fueron completados con éxitos y no hubo errores ni pendientes, lo que se debe al bajo procesamiento que tiene este endpoint.
+
+**Tiempo de respuesta visto por el cliente**
+![img1](test_runs/load/ping/node/response_time_client.png)
+
+**Tiempo de respuesta visto por el servicio**
+![img1](test_runs/load/ping/node/response_time_server.png)
+
+Se pueden apreciar los tiempos de respuesta tanto de la perspectiva del cliente como del servicio y, a su vez, para cada uno se tiene la mediana y el máximo.
+En ambos gráficos se observa que la mediana tiene un valor bajo, lo cual se corresponde con el bajo procesamiento que tiene el endpoint ping.  
+Por otro lado, el máximo del lado del servicio también se condice con el máximo del lado del cliente, que van desfasados 10 segundos porque el servicio pushea la métrica antes que el cliente. Congruentemente, mirando el gráfico de recursos se termina de concluir que el máximo uso de CPU se produce durante el pico de tiempo de respuesta.
+
+**Recursos utilizados**
+![img1](test_runs/load/ping/node/resources.png)
+Durante el transcurso de toda la prueba, el uso de CPU fluctúa, pero se mantiene bajo y en concordancia con el análisis de los gráficos anteriores. En cuanto a la memoria, se mantiene constante puesto que no se realizan operaciones de escritura.
+
+### Load Testing
+
+### Replicado (Cinco nodos)
+### Load Testing
+
+
+## Vista Components & Connectors
 
 ## Servicio `bbox`
 
