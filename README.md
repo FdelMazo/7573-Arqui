@@ -131,6 +131,16 @@ Durante el transcurso de toda la prueba, el uso de CPU fluctúa, pero se mantien
 
 ## Vista Components & Connectors
 
+Se presentan a continuación dos diagramas de Components & Connectors, uno para el caso de un nodo y otro para el caso de cinco nodos.
+
+![C&C 1](ComponentsAndConnectorsDiagrams/CC1.png)
+
+En este primer escenario, para una sola replica del servidor, podemos observar que el mismo recibe llamados HTTP que vienen del balanceador de carga Nginx, y a este load balancer también le llegan llamadas HTTP (al puerto 5555). Estos llamados que recibe Nginx pueden realizarse a través de Artillery, donde simulamos escenarios de carga, o desde la terminal, desde donde un usuario puede hacer una request con el comando "curl". Si el llamado que se le hizo al servidor, independientemente del origen, es a los endpoints "ping" o "work", simplemente devuelve la response sin hacer mas llamadas adicionales. En cambio, si el endpoint llamado es "sync" o "async", se debe realizar otra llamada HTTP a alguno de los servicios bbox proporcionados por la cátedra (se llama al que corresponda dependiendo si el endpoint fue "sync" o "async"), que darán su respuesta y allí el server podrá también dar su response.
+
+![C&C 2](ComponentsAndConnectorsDiagrams/CC2.png)
+
+Este diagrama muestra cuando existen cinco replicas del servidor. El procedimiento es casi exactamente igual, pero ahora el load balancer Nginx tiene que repartir las requests entre las cinco replicas del servidor. Para esto, Nginx tiene un algoritmo de balanceo de carga que reparte dichas requests entre las replicas de manera equitativa. En este caso, el load balancer también recibe llamadas HTTP desde Artillery y desde la terminal, y la replica que procese esa request puede llamar a los servicios bbox de ser necesario. Igual que en el caso anterior, todas las llamadas son HTTP.
+
 ## Servicio `bbox`
 
 ```
