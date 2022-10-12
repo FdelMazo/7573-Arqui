@@ -9,19 +9,11 @@ const random = Math.round(Math.random() * 100, 1)
 
 const sdc = new SDC({
     host: 'graphite_node',
-    port: 8127
+    port: 8125
 })
 
+app.use(sdc.helpers.getExpressMiddleware(`requests_${random}`, { timeByUrl: true }));
 
-app.use(sdc.helpers.getExpressMiddleware('requests', { timeByUrl: true }));
-
-/*
-const metrics = (endpoint) => {
-    const begin = new Date()
-    sdc.timing(`node.${endpoint}.request-time`, begin)
-    sdc.increment(`node.${endpoint}.request-count`)
-}
-*/
 
 // http://ajennings.net/blog/a-million-digits-of-pi-in-9-lines-of-javascript.html
 // http://ajennings.net/pi.html
@@ -38,26 +30,22 @@ const pi = (digits) => {
 }
 
 app.get('/ping', (req, res) => {
-    //metrics('ping')
     res.status(200).send(`[${random}] pong\n`)
 })
 
 app.get('/work', (req, res) => {
-    //metrics('work')
     const n_thousand_digits = req.query.n || 15
     const r = pi(n_thousand_digits * 1000).toString()
     res.status(200).send(r.toString() + '\n')
 })
 
 app.get('/sync', (req, res) => {
-    //metrics('sync')
     axios.get(url_sync).then(res_service => {
         res.status(200).send(`Res sync service\n ${res_service.data}\n`)
     })
 })
 
 app.get('/async', (req, res) => {
-    //metrics('async')
     axios.get(url_async).then(res_service => {
         res.status(200).send(`Res async service\n ${res_service.data}\n`)
     })
