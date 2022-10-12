@@ -29,6 +29,16 @@ services:
             - "8125:8125/udp"
             - "8126:8126"
 
+    graphite_node:
+        image: graphiteapp/graphite-statsd:1.1.10-3
+        volumes:
+            - ./statsd.config.js:/opt/statsd/config.js
+            - ./graphite.storage-schemas.conf:/opt/graphite/conf/storage-schemas.conf
+        ports:
+            - "8091:80"
+            - "8127:8125/udp"
+            - "8128:8126"
+
     grafana:
         image: grafana/grafana:9.1.2
         ports:
@@ -40,7 +50,7 @@ services:
         image: gcr.io/cadvisor/cadvisor:v0.45.0
         links:
             - graphite
-        command: -storage_driver="statsd" -storage_driver_host="graphite:8125" -storage_driver_db="cadvisor" -storage_driver_buffer_duration="1s"
+        command: -storage_driver="statsd" -storage_driver_host="graphite:8125" -storage_driver_db="cadvisor" -storage_driver_buffer_duration="10s"
         ports:
             - "8080:8080"
         volumes:
