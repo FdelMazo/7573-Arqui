@@ -73,6 +73,23 @@ $ time curl "localhost:5555/work?n=100"
 
 ## Performance Testing
 
+Para poder llevar a cabo la comparación entre servicios hemos realizado las siguientes pruebas de performance:
+### Load testing
+
+Se incrementa la carga constantemente en el sistema hasta llegar a un valor umbral.
+Para cada endpoint se corre el siguiente escenario:
+1. **WarmUp**: durante un período de 30 segundos, se envían 5 requests por segundo.
+2. **RampUp**: durante un período de 30 segundos, se envían 5 requests por segundo incrementando hasta 30 requests por segundo.
+3. **Plain**: durante un período de 120 segundos, se envían 30 requests por segundo
+4. **Cleanup**: durante un período de 15 segundos, no se envían requests.
+
+### Stress testing
+Se carga al sistema con un gran número de usuarios/procesos concurrentes que no pueden ser soportados, para comprobar la estabilidad del mismo. Por esto mismo, las etapas son similares, pero el RampUp y el Plain mucho más intensos.
+1. **WarmUp**: durante un período de 30 segundos, se envían 5 requests por segundo.
+2. **RampUp**: durante un período de 60 segundos, se envían 5 requests por segundo incrementando hasta 600 requests por segundo.
+3. **Plain**: durante un período de 120 segundos, se envían 600 requests por segundo
+4. **Cleanup**: durante un período de 15 segundos, no se envían requests.
+
 - https://www.softwaretestingclass.com/what-is-performance-testing/
 - Explicar y mostrar ejemplos de artillery
 - Pelar grafos de grafana y demas
