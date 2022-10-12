@@ -37,4 +37,4 @@ scenarios:
   - name: work
     flow:
       - get:
-          url: '/work'
+          url: '/work?n=1'

@@ -24,17 +24,17 @@ config:
     - name: RampUp
       duration: 30
       arrivalRate: 5
-      rampTo: 30
+      rampTo: 12
     - name: Plain
       duration: 120
-      arrivalRate: 30
+      arrivalRate: 12
     - name: Cleanup
       duration: 15
       arrivalRate: 0
 
 
 scenarios:
-  - name: async
+  - name: sync
     flow:
       - get:
-          url: '/async'
+          url: '/sync'
