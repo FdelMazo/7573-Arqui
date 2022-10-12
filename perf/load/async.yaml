@@ -1,0 +1,40 @@
+config:
+  environments:
+    node:
+      target: 'http://localhost:5555'
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-node"
+    many:
+      target: 'http://localhost:5555/many'
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-node-replicated"
+
+  pool: 50 # All HTTP requests from all virtual users will be sent over the same connections
+
+  phases:
+    - name: WarmUp
+      duration: 30
+      arrivalRate: 5
+    - name: RampUp
+      duration: 30
+      arrivalRate: 5
+      rampTo: 30
+    - name: Plain
+      duration: 120
+      arrivalRate: 30
+    - name: Cleanup
+      duration: 30
+      arrivalRate: 0
+
+
+scenarios:
+  - name: sync
+    flow:
+      - get:
+          url: '/sync'

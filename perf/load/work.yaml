@@ -18,20 +18,23 @@ config:
   pool: 50 # All HTTP requests from all virtual users will be sent over the same connections
 
   phases:
-    - name: Ramp
+    - name: WarmUp
+      duration: 30
+      arrivalRate: 5
+    - name: RampUp
       duration: 30
       arrivalRate: 5
       rampTo: 30
-    - name: Plain-Intensive
+    - name: Plain
       duration: 120
       arrivalRate: 30
-    - name: Plain-Quite
+    - name: Cleanup
       duration: 30
-      arrivalRate: 5
-    
+      arrivalRate: 0
+
 
 scenarios:
-  - name: sync
+  - name: work
     flow:
       - get:
-          url: '/sync'
+          url: '/work'
