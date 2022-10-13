@@ -18,18 +18,14 @@ config:
   pool: 50 # All HTTP requests from all virtual users will be sent over the same connections
 
   phases:
-    # En los primeros 5 minutos, tengo 35 alumnos
-    - name: HiperAnsiosos
-      duration: 300
-      arrivalCount: 35
-    # En los siguientes 5 minutos, tengo 25 alumnos
+    # En los primeros 5 minutos, tengo 70 alumnos
     - name: Ansiosos
       duration: 300
-      arrivalCount: 25
-    # En los últimos 20 minutos, tengo los restantes 40 alumnos
+      arrivalCount: 70
+    # En los siguientes 25 minutos, tengo 30 alumnos
     - name: Relajados
-      duration: 1200
-      arrivalCount: 40
+      duration: 1500
+      arrivalCount: 30
 
 
 scenarios:
@@ -37,14 +33,14 @@ scenarios:
     flow:
       - get:
           # /iniciar_sesion
-          url: '/work?n=1'
+          url: '/work?n=10'
       - get:
           # /ver_materias_disponibles
           url: '/sync'
       - loop:
           # /inscripcion
           - get:
-              url: '/work?n=3'
+              url: '/work?n=15'
         # Ni 3, ni 5 (Basados en el promedio de Nico Paez: 3.84 materias por alumno)
         count: 4
       - get:
