@@ -172,7 +172,7 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 
 ![](test_runs/load/work/node/requests_state.png)
 
-Se puede observar que todos los requests fueron completados con éxitos y no hubo errores ni pendientes. Aunque este proceso no es tan trivial como el ping, tampoco requiere demasiado procesamiento. 
+Se puede observar que todos los requests fueron completados con éxitos y no hubo errores ni pendientes. Aunque este proceso no es tan trivial como el `ping`, tampoco requiere demasiado procesamiento. 
 
 **Tiempo de respuesta visto por el cliente**
 
@@ -182,19 +182,17 @@ Se puede observar que todos los requests fueron completados con éxitos y no hub
 
 ![](test_runs/load/work/node/response_time_server.png)
 
-
 Acá también se pueden apreciar los tiempos de respuesta del cliente y del servicio, además de la mediana y el máximo de cada uno.
 
-La mediana tiene un valor mayor al del ping dado que el procesamiento de este endpoint demanda un mayor tiempo.
+La mediana tiene un valor mayor al del `ping` dado que el procesamiento de este endpoint demanda un mayor tiempo.
 
 Se puede observar que los tiempos de respuesta tanto del cliente como del servidor se mantienen prácticamente constantes durante todo el test de carga, creciendo ligeramente cuando se aumenta la carga. 
-
 
 **Recursos utilizados**
 
 ![](test_runs/load/work/node/resources_node_5.png)
 
-En este gráfico se puede observar que el uso de CPU fluctúa, pero se sigue manteniendo bajo y coincide con el análisis de los gráficos mostrados anteriormente. La memoria, se mantiene constante dado que no se realizan operaciones de escritura.
+En este gráfico se puede observar que el uso de CPU fluctúa y coincide con el análisis de los gráficos mostrados anteriormente. La memoria, se mantiene constante dado que no se realizan operaciones de escritura.
 
 ### Replicado (Cinco nodos)
 
@@ -220,7 +218,7 @@ Los tiempos de respuesta se mantienen bajos y condice lo observado para el clien
 
 ![](test_runs/load/work/many/resources_node_5.png)
 
-Se muestran los recursos utilizados por un solo nodo, que se mantienen muy bajos a pesar de la carga y nuevamente se debe a que el endpoint no necesita utilizar gran cantidad de CPU. 
+Se muestran los recursos utilizados por un solo nodo, donde el máximo de CPU utilizado es aproximadamente el 20% del utilizado cuando hay un solo nodo, lo que tiene sentido ya que la carga se reparte de manera balanceada en cinco nodos.
 
 ## Sync/Async
 
@@ -228,11 +226,19 @@ La sección 2 de este trabajo se concentra en la funcionalidad de los endpoints 
 
 ![Recursos utilizados por `sync` con un nodo](test_runs/load/sync/node/resources.png)
 
+Se puede observar que los recursos utilizados por `sync` con un nodo continuan siendo bajos. Lo mismo sucede con la memoria, dado que siguen sin realizarse operaciones de escritura.
+
 ![Recursos utilizados por `async` con un nodo](test_runs/load/async/node/resources.png)
+
+Se puede observar que los recursos utilizados por `async` con un nodo es mayor al `sync`. El consumo de CPU es mayor, aunque no es un aumento muy importante. La memoria también aumenta un poco pero sigue cercana a cero. 
 
 ![Recursos utilizados por `sync` con cinco nodos](test_runs/load/sync/many/resources_node_5.png)
 
+Se muestran los recursos utilizados por un solo nodo, y se puede observar que representan aproximadamente un 20% del máximo de CPU utilizado por un nodo, lo que implica que se reparte la carga de manera balanceada en 5 nodos, que es el comportamiento esperado. 
+
 ![Recursos utilizados por `async` con cinco nodos](test_runs/load/async/many/resources_node_5.png)
+
+Se puede observar que los recursos utilizados por un solo nodo son mayores al de `sync`, pero al no realizarse mucho procesamiento, no son tan altos. Se muestra que la carga está repartida entre varios nodos, ya que ninguno supera el uso de CPU visto para cuando hay un solo nodo. 
 
 ## Vista Components & Connectors
 
