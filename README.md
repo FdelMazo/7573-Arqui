@@ -267,6 +267,8 @@ A los 15 requests vemos que se duplica el tiempo de respuesta, entonces suponemo
 
 ![Tiempo de respuesta visto por el servicio de `async` con un nodo](test_runs/load/async/node/response_time_server.png)
 
+Analizando los gráficos de tiempo de respuesta, tanto para el cliente como para el servicio, podemos ver que se promedia una respuesta de 1.26 segundos, estando entre 1 y 1.5 segundos.
+
 \newpage
 
 ## Caso de estudio: Sistema de inscripciones
