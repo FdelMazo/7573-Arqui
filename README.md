@@ -160,7 +160,7 @@ Los tiempos de respuesta se mantienen muy bajos durante toda la prueba y coheren
 
 ![](test_runs/load/ping/many/resources_node_4.png)
 
-En este caso se muestran los recursos utilizados por un sólo nodo, los cuales se mantienen muy bajos a pesar de la carga y nuevamente se debe a la naturaleza simple del endpoint.
+En este caso se muestran los recursos utilizados por un solo nodo, los cuales se mantienen muy bajos a pesar de la carga y nuevamente se debe a la naturaleza simple del endpoint.
 
 ## Work
 
@@ -182,7 +182,7 @@ En este caso se muestran los recursos utilizados por un sólo nodo, los cuales s
 
 **Recursos utilizados**
 
-![](test_runs/load/work/node/resources.png)
+![](test_runs/load/work/node/resources_node_5.png)
 
 
 ### Replicado (Cinco nodos)

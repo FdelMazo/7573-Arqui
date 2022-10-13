@@ -12,7 +12,7 @@ const sdc = new SDC({
     port: 8125
 })
 
-app.use(sdc.helpers.getExpressMiddleware(`requests_${random}`, { timeByUrl: true }));
+app.use(sdc.helpers.getExpressMiddleware(`requests`));
 
 
 // http://ajennings.net/blog/a-million-digits-of-pi-in-9-lines-of-javascript.html
