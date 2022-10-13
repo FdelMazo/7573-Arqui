@@ -205,83 +205,17 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 
 ![](test_runs/load/work/many/resources_node_5.png)
 
-## Sync
+## Sync/Async
 
-### Un nodo
+La sección 2 de este trabajo se concentra en la funcionalidad de los endpoints `sync` y `async`, por lo que acá solamente analizamos los recursos utilizados.
 
-### Load Testing
+![Recursos utilizados por `sync` con un nodo](test_runs/load/sync/node/resources.png)
 
-**Tiempo de respuesta visto por el cliente**
+![Recursos utilizados por `async` con un nodo](test_runs/load/async/node/resources.png)
 
-![](test_runs/load/sync/node/response_time_client.png)
+![Recursos utilizados por `sync` con cinco nodos](test_runs/load/sync/many/resources_node_5.png)
 
-**Tiempo de respuesta visto por el servicio**
-
-![](test_runs/load/sync/node/response_time_server.png)
-
-**Recursos utilizados**
-
-![](test_runs/load/sync/node/resources.png)
-
-
-### Replicado (Cinco nodos)
-
-### Load Testing
-
-**Requests completados, pendientes y fallidos**
-
-![](test_runs/load/sync/many/requests_state.png)
-
-**Tiempo de respuesta visto por el cliente**
-
-![](test_runs/load/sync/many/response_time_client.png)
-
-**Tiempo de respuesta visto por el servicio**
-
-![](test_runs/load/sync/many/response_time_server.png)
-
-**Recursos utilizados**
-
-![](test_runs/load/sync/many/resources_node_5.png)
-
-## Async
-
-### Un nodo
-
-### Load Testing
-
-**Tiempo de respuesta visto por el cliente**
-
-![](test_runs/load/async/node/response_time_client.png)
-
-**Tiempo de respuesta visto por el servicio**
-
-![](test_runs/load/async/node/response_time_server.png)
-
-**Recursos utilizados**
-
-![](test_runs/load/async/node/resources.png)
-
-
-### Replicado (Cinco nodos)
-
-### Load Testing
-
-**Requests completados, pendientes y fallidos**
-
-![](test_runs/load/async/many/requests_state.png)
-
-**Tiempo de respuesta visto por el cliente**
-
-![](test_runs/load/async/many/response_time_client.png)
-
-**Tiempo de respuesta visto por el servicio**
-
-![](test_runs/load/async/many/response_time_server.png)
-
-**Recursos utilizados**
-
-![](test_runs/load/async/many/resources_node_5.png)
+![Recursos utilizados por `async` con cinco nodos](test_runs/load/async/many/resources_node_5.png)
 
 ## Vista Components & Connectors
 
@@ -325,8 +259,13 @@ A los 15 requests vemos que se duplica el tiempo de respuesta, entonces suponemo
 
 **Demora en responder**
 
+![Tiempo de respuesta visto por el cliente de `sync` con un nodo](test_runs/load/sync/node/response_time_client.png)
 
+![Tiempo de respuesta visto por el servicio de `sync` con un nodo](test_runs/load/sync/node/response_time_server.png)
 
+![Tiempo de respuesta visto por el cliente de `async` con un nodo](test_runs/load/async/node/response_time_client.png)
+
+![Tiempo de respuesta visto por el servicio de `async` con un nodo](test_runs/load/async/node/response_time_server.png)
 
 \newpage
 
