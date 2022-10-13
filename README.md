@@ -211,10 +211,6 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 
 ### Load Testing
 
-**Requests completados, pendientes y fallidos**
-
-![](test_runs/load/sync/node/requests_state.png)
-
 **Tiempo de respuesta visto por el cliente**
 
 ![](test_runs/load/sync/node/response_time_client.png)
@@ -253,10 +249,6 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 ### Un nodo
 
 ### Load Testing
-
-**Requests completados, pendientes y fallidos**
-
-![](test_runs/load/async/node/requests_state.png)
 
 **Tiempo de respuesta visto por el cliente**
 
@@ -309,23 +301,25 @@ Este diagrama muestra cuando existen cinco replicas del servidor. El procedimien
 
 ## Servicio `bbox`
 
-Para realizar en análisis en esta sección utilizamos las métricas que fueron presentadas en la sección 1, particularmente las que corresponden a los servicios brindados por la cátedra. 
-Decidimos en un principio nombrar a un servicio como 'sync' y otro como 'async' ya que la existencia de éstos era la única información que teníamos, pero a continuación veremos si realmente se comportan de esa manera.
+Decidimos en un principio nombrar a un servicio como `sync` y otro como `async` ya que la existencia de éstos era la única información que teníamos, pero a continuación veremos si realmente se comportan de esa manera.
 
 **Sincrónico/Asincrónico**
-Recordemos que podemos distinguir entre un servicio sincrónico y uno asincrónico ya que el primero será aquel que espere a que finalice su ejecución para devolver una respuesta, y el segundo termina antes de tener esa respuesta. 
-Viendo los gráficos, se puede observar que el servicio 'sync' tiene valores bastante más bajos en cuanto a la cantidad de requests que fueron completados entonces podemos afirmar que los nombres dispuestos a cada uno de los servicios son los correctos.
 
+![Requests completados, pendientes y fallidos de `sync` con un nodo](test_runs/load/sync/node/requests_state.png)
+
+![Requests completados, pendientes y fallidos de `async` con un nodo](test_runs/load/async/node/requests_state.png)
+
+Recordemos que podemos distinguir entre un servicio sincrónico y uno asincrónico ya que el primero será aquel que espere a que finalice su ejecución para devolver una respuesta, y el segundo termina antes de tener esa respuesta. Viendo los gráficos, se puede observar que el servicio `sync` tiene valores bastante más bajos en cuanto a la cantidad de requests que fueron completados entonces podemos afirmar que los nombres dispuestos a cada uno de los servicios son los correctos.
 
 **Cantidad de workers (en el caso sincrónico)**
-Utilizamos Apache Benchmark para medir rendimientos de estos servicios.
-Comenzamos consultando información para un único request y se obtuvo lo siguiente: 
 
-![](test_runs/workers/concurrency1.png)
+Utilizamos Apache Benchmark para medir rendimientos de estos servicios. Comenzamos consultando información para un único request y se obtuvo lo siguiente:
+
+![](test_runs/workers/concurrency1.png){ width=400px }
 
 Comenzamos a aumentar la cantidad de request para ver algún cambio en el rendimiento, observamos un cambio cuando se superan los 14 requests:
 
-![](test_runs/workers/concurrency15.png)
+![](test_runs/workers/concurrency15.png){ width=400px }
 
 A los 15 requests vemos que se duplica el tiempo de respuesta, entonces suponemos que hay 14 workers ya que hasta ese punto cada uno se encarga de un request distinto y cuando se supera, hay que esperar que termine para poder responder al siguiente.
 
