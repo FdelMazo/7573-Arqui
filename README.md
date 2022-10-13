@@ -309,17 +309,30 @@ Este diagrama muestra cuando existen cinco replicas del servidor. El procedimien
 
 ## Servicio `bbox`
 
-```
-Análisis y caracterización
+Para realizar en análisis en esta sección utilizamos las métricas que fueron presentadas en la sección 1, particularmente las que corresponden a los servicios brindados por la cátedra. 
+Decidimos en un principio nombrar a un servicio como 'sync' y otro como 'async' ya que la existencia de éstos era la única información que teníamos, pero a continuación veremos si realmente se comportan de esa manera.
 
-Deberán caracterizar cada servicio mirando tres propiedades:
+**Sincrónico/Asincrónico**
+Recordemos que podemos distinguir entre un servicio sincrónico y uno asincrónico ya que el primero será aquel que espere a que finalice su ejecución para devolver una respuesta, y el segundo termina antes de tener esa respuesta. 
+Viendo los gráficos, se puede observar que el servicio 'sync' tiene valores bastante más bajos en cuanto a la cantidad de requests que fueron completados entonces podemos afirmar que los nombres dispuestos a cada uno de los servicios son los correctos.
 
-    Sincrónico / Asincrónico: Uno de los servicios se comportará de manera sincrónica, y el otro de manera asincrónica. Deberán detectar de qué tipo es cada uno.
-    Cantidad de workers (en el caso sincrónico): El servicio sincrónico está implementado con una cantidad de workers. Deberán buscar algún indicio sobre cuál es esta cantidad.
-    Demora en responder: Cada servicio demora un tiempo en responder, que puede ser igual o distinto entre ellos. Deberán obtener este valor para cada uno.
 
-Las herramientas para este análisis son las mismas que usaron en la Sección 1. Deben generar carga que ponga en relieve las características de cada servicio, haciendo uso de gráficos para mostrar puntos interesantes de la prueba. Incluyan en el informe una descripción de la/s estrategia/s utilizada/s. Recomendamos, por claridad, agregar una tabla al final de la sección con los resultados para cada uno.
-```
+**Cantidad de workers (en el caso sincrónico)**
+Utilizamos Apache Benchmark para medir rendimientos de estos servicios.
+Comenzamos consultando información para un único request y se obtuvo lo siguiente: 
+
+![](test_runs/workers/concurrency1.png)
+
+Comenzamos a aumentar la cantidad de request para ver algún cambio en el rendimiento, observamos un cambio cuando se superan los 14 requests:
+
+![](test_runs/workers/concurrency15.png)
+
+A los 15 requests vemos que se duplica el tiempo de respuesta, entonces suponemos que hay 14 workers ya que hasta ese punto cada uno se encarga de un request distinto y cuando se supera, hay que esperar que termine para poder responder al siguiente.
+
+**Demora en responder**
+
+
+
 
 \newpage
 
