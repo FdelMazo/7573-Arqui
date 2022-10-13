@@ -361,3 +361,7 @@ Podemos notar que en el sistema replicado se puede ver todo mucho más _plano_. 
 [^2]: En previas versiones del SIU Guaraní habia un pequeño _flush_ de información al cerrar sesión, haciendo que sea un proceso más lento de lo que uno intuiría. Esto no lo vamos a modelar!
 
 [^3]: No vamos a simular alumnos entrando al sistema fuera de su franja horaria (problema conocido del SIU Guaraní)
+
+### Conclusiones
+
+Durante el desarrollo del presente trabajo practico tuvimos la posibilidad de usar diferentes herramientas que nos permitieron crear escenarios de carga para testear un servidor y visualizaciones que nos permitieron conocer ciertas metricas como tiempo de respuesta del servidor, del cliente, o uso de los recursos, entre otros. Consideramos muy provechosa dicha realizacion ya que estos conocimientos son muy importantes para conocer el estado y funcionamiento real de las aplicaciones que desarrollemos, tanto en un ambito educativo como en un ambito laboral. Conocer como se comporta un servidor bajo diferentes escenarios de carga es muy importante para la creacion de sistemas escalables y que provean servicios de la forma en que se espera, ya que las situaciones simuladas suelen suceder en la vida cotidiana.
