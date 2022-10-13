@@ -10,7 +10,7 @@ En primer lugar, al levantar la aplicación tenemos a nginx corriendo en `localh
 
 - `/ping`: Un simple healtcheck. Devuelve un número identificador del proceso, para poder confirmar que el servicio replicado esta contestando desde distintos lugares.
 - `/work?n=15`: Una manera de representar cálculos pesados. Computa y devuelve los primeros n-mil dígitos de pi, siendo `n` configurable.
-- `/sync`: Invoca el servicio sincrónico `bbox` (explicado más adelante)
+- `/sync`: Invoca el servicio sincrónico `bbox`
 - `/async`: Invoca el servicio asincrónico `bbox`
 
 \newpage
@@ -71,7 +71,7 @@ $ time curl "localhost:5555/work?n=100"
 
 ## Performance Testing
 
-Para poder llevar a cabo la comparación entre servicios hemos realizado pruebas de carga y de estrés.
+Para poder llevar a cabo la comparación entre servicios hemos realizado pruebas de carga.
 
 ### Load testing
 
@@ -82,17 +82,6 @@ Para cada endpoint se corren las siguientes etapas:
 1. **WarmUp**: durante un período de 30 segundos, se envían 5 requests por segundo.
 2. **RampUp**: durante un período de 30 segundos, se envían 5 requests por segundo incrementando hasta 30 requests por segundo.
 3. **Plain**: durante un período de 120 segundos, se envían 30 requests por segundo
-4. **Cleanup**: durante un período de 15 segundos, no se envían requests.
-
-### Stress testing
-
-Se carga al sistema con un gran número de usuarios/procesos concurrentes que no pueden ser soportados, para comprobar la estabilidad del mismo. Por esto mismo, las etapas son similares, pero el RampUp y el Plain mucho más intensos.
-
-Para cada endpoint se corren las siguientes etapas:
-
-1. **WarmUp**: durante un período de 30 segundos, se envían 5 requests por segundo.
-2. **RampUp**: durante un período de 60 segundos, se envían 5 requests por segundo incrementando hasta 600 requests por segundo.
-3. **Plain**: durante un período de 120 segundos, se envían 600 requests por segundo
 4. **Cleanup**: durante un período de 15 segundos, no se envían requests.
 
 ## Ping
@@ -172,7 +161,7 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 
 ![](test_runs/load/work/node/requests_state.png)
 
-Se puede observar que todos los requests fueron completados con éxitos y no hubo errores ni pendientes. Aunque este proceso no es tan trivial como el `ping`, tampoco requiere demasiado procesamiento. 
+Se puede observar que todos los requests fueron completados con éxitos y no hubo errores ni pendientes. Aunque este proceso no es tan trivial como el `ping`, tampoco requiere demasiado procesamiento.
 
 **Tiempo de respuesta visto por el cliente**
 
@@ -182,11 +171,10 @@ Se puede observar que todos los requests fueron completados con éxitos y no hub
 
 ![](test_runs/load/work/node/response_time_server.png)
 
-Acá también se pueden apreciar los tiempos de respuesta del cliente y del servicio, además de la mediana y el máximo de cada uno.
 
-La mediana tiene un valor mayor al del `ping` dado que el procesamiento de este endpoint demanda un mayor tiempo.
+La mediana tiene un valor mayor al del ping dado que el procesamiento de este endpoint demanda un mayor tiempo.
 
-Se puede observar que los tiempos de respuesta tanto del cliente como del servidor se mantienen prácticamente constantes durante todo el test de carga, creciendo ligeramente cuando se aumenta la carga. 
+Se puede observar que los tiempos de respuesta tanto del cliente como del servidor se mantienen prácticamente constantes durante todo el test de carga, creciendo ligeramente cuando se aumenta la carga.
 
 **Recursos utilizados**
 
@@ -212,7 +200,7 @@ Se puede observar que, como sucede con un nodo, todos los requests se completan 
 
 ![](test_runs/load/work/many/response_time_server.png)
 
-Los tiempos de respuesta se mantienen bajos y condice lo observado para el cliente y para el servidor, comenzando bajo y subiendo ligeramente en la mitad de la prueba. 
+Los tiempos de respuesta se mantienen bajos y condice lo observado para el cliente y para el servidor, comenzando bajo y subiendo ligeramente en la mitad de la prueba.
 
 **Recursos utilizados**
 
@@ -230,15 +218,17 @@ Se puede observar que los recursos utilizados por `sync` con un nodo continuan s
 
 ![Recursos utilizados por `async` con un nodo](test_runs/load/async/node/resources.png)
 
-Se puede observar que los recursos utilizados por `async` con un nodo es mayor al `sync`. El consumo de CPU es mayor, aunque no es un aumento muy importante. La memoria también aumenta un poco pero sigue cercana a cero. 
+Se puede observar que los recursos utilizados por `async` con un nodo es mayor al `sync`. El consumo de CPU es mayor, aunque no es un aumento muy importante. La memoria también aumenta un poco pero sigue cercana a cero.
 
 ![Recursos utilizados por `sync` con cinco nodos](test_runs/load/sync/many/resources_node_5.png)
 
-Se muestran los recursos utilizados por un solo nodo, y se puede observar que representan aproximadamente un 20% del máximo de CPU utilizado por un nodo, lo que implica que se reparte la carga de manera balanceada en 5 nodos, que es el comportamiento esperado. 
+Se muestran los recursos utilizados por un solo nodo, y se puede observar que representan aproximadamente un 20% del máximo de CPU utilizado por un nodo, lo que implica que se reparte la carga de manera balanceada en 5 nodos, que es el comportamiento esperado.
 
 ![Recursos utilizados por `async` con cinco nodos](test_runs/load/async/many/resources_node_5.png)
 
-Se puede observar que los recursos utilizados por un solo nodo son mayores al de `sync`, pero al no realizarse mucho procesamiento, no son tan altos. Se muestra que la carga está repartida entre varios nodos, ya que ninguno supera el uso de CPU visto para cuando hay un solo nodo. 
+Se puede observar que los recursos utilizados por un solo nodo son mayores al de `sync`, pero al no realizarse mucho procesamiento, no son tan altos. Se muestra que la carga está repartida entre varios nodos, ya que ninguno supera el uso de CPU visto para cuando hay un solo nodo.
+
+\newpage
 
 ## Vista Components & Connectors
 
@@ -290,7 +280,7 @@ A los 15 requests vemos que se duplica el tiempo de respuesta, entonces suponemo
 
 ![Tiempo de respuesta visto por el servicio de `async` con un nodo](test_runs/load/async/node/response_time_server.png)
 
-Analizando los gráficos de tiempo de respuesta, tanto para el cliente como para el servicio, podemos ver que se promedia una respuesta de 1.26 segundos, estando entre 1 y 1.5 segundos.
+Analizando los gráficos de tiempo de respuesta, tanto para el cliente como para el servicio, podemos ver que se promedia una respuesta de 1.26 segundos, estando entre 1 y 1.5 segundos. Podemos asumir que estos son los tiempos de respuesta aproximados de `bbox` ya que en nuestras corridas se agrega muy poco overhead sobre el llamado a los endpoints (considerando que la corrida es local, por lo que tenemos una latencia de red negligible).
 
 \newpage
 
@@ -364,4 +354,6 @@ Podemos notar que en el sistema replicado se puede ver todo mucho más _plano_. 
 
 ### Conclusiones
 
-Durante el desarrollo del presente trabajo practico tuvimos la posibilidad de usar diferentes herramientas que nos permitieron crear escenarios de carga para testear un servidor y visualizaciones que nos permitieron conocer ciertas metricas como tiempo de respuesta del servidor, del cliente, o uso de los recursos, entre otros. Consideramos muy provechosa dicha realizacion ya que estos conocimientos son muy importantes para conocer el estado y funcionamiento real de las aplicaciones que desarrollemos, tanto en un ambito educativo como en un ambito laboral. Conocer como se comporta un servidor bajo diferentes escenarios de carga es muy importante para la creacion de sistemas escalables y que provean servicios de la forma en que se espera, ya que las situaciones simuladas suelen suceder en la vida cotidiana.
+Durante el desarrollo del presente trabajo practico tuvimos la posibilidad de usar diferentes herramientas que nos permitieron crear escenarios de carga para testear un servidor y visualizaciones que nos permitieron conocer ciertas metricas como tiempo de respuesta del servidor, del cliente, o uso de los recursos, entre otros. 
+
+Consideramos muy provechosa dicha realizacion ya que estos conocimientos son muy importantes para conocer el estado y funcionamiento real de las aplicaciones que desarrollemos, tanto en un ambito educativo como en un ambito laboral. Conocer como se comporta un servidor bajo diferentes escenarios de carga es muy importante para la creacion de sistemas escalables y que provean servicios de la forma en que se espera, ya que las situaciones simuladas suelen suceder en la vida cotidiana.
