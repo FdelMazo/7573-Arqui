@@ -340,13 +340,13 @@ A los 15 requests vemos que se duplica el tiempo de respuesta, entonces suponemo
 
 ¿Cómo debería comportarse un sistema de inscripciones facultativo? Hagamos un par de suposiciones, y centremonos en intentar simular un sistema de inscripciones para FIUBA.
 
-¿Con cuanta carga estamos trabajando? Basado en algunas fuentes[^1] podemos tomar como supuestos para nuestro sistema simulado que vamos a trabajar con una carga de 10 mil alumnos. Cada uno de estos alumnos se inscribirán en entre 3 y 5 materias.
+¿Con cuanta carga estamos trabajando? Basado en algunas fuentes[^1] podemos tomar como supuestos para nuestro sistema simulado que vamos a trabajar con una carga de 10 mil alumnos. Cada uno de estos alumnos se inscriben en entre 3 y 5 materias.
 
 Desde el punto de vista del usuario, secuencialmente:
 
 - Iniciar sesión - `/iniciar_sesion`
-- Inscribirse a n materias:
-    - Ver la lista de materias disponibles - `/ver_materias_disponibles`
+- Ver la lista de materias disponibles - `/ver_materias_disponibles`
+- Inscribirse a `n` materias:
     - Inscribirse en una materia - `/inscripcion`
 - Cerrar sesión[^2] - `/cerrar_sesion`
 
@@ -355,20 +355,48 @@ Desde el punto de vista del sistema:
 - A nuestros 10 mil alumnos los dividimos uniformemente en franjas horarias de 30 minutos (las prioridades), en una semana laboral:
     - De 9hs a 18hs de un día tenemos 18 franjas
     - De lunes a viernes tenemos 18 * 5 => 90 franjas
-    - 10 mil alumnos en 90 franjas => ~100 alumnos activos en el sistema en cualquier (media) hora dada[^3]
+    - 10 mil alumnos en 90 franjas => ~100 inicios de sesión cada media hora[^3]
 
-- Asumiendo la ansiedad del alumnado, vamos a asumir que, si bien hay 30 minutos para inscribirse, la mayoría de los alumnos de una franja horaria se inscribiran en los primeros 10 minutos de la franja, y el resto lo hará mas relajadamente en lo que queda de la media hora.
+- Conociendo la ansiedad del alumnado, vamos a asumir que, si bien hay 30 minutos para inscribirse, la mayoría de los alumnos se inscriben al comienzo de su franja horaria.
 
-Habiendo marcado todas estas suposiciones e hipótesis, lo que pretendemos es:
+Los endpoints los simularemos como:
 
-- Ver en nuestros gráficos picos de _hits_ a los distintos endpoints al comienzo de cada franja horaria y luego teniendo hits a un ritmo decente. Ningún tipo de hit en hora no laboral.
-- Los endpoints simularlos como:
-    - `/iniciar_sesion`: Un endpoint con trabajo liviano (consiste principalmente de chequear la contraseña del usuario)
-    - `/ver_materias_disponibles`: Un endpoint sincrónico que depende de un servicio externo (preguntarle a la base de datos)
-    - `/inscripcion`: Un endpoint con trabajo mediano, ya que debe ser una acción atómica para proveer control de concurrencia, para evitar que se anoten más alumnos que el cupo disponible
-    - `/cerrar_sesion`: Un endpoint inmediato
+- `/iniciar_sesion`: Un endpoint con trabajo liviano (consiste principalmente de chequear la contraseña del usuario)
+- `/ver_materias_disponibles`: Un endpoint sincrónico que depende de un servicio externo (preguntarle a la base de datos)
+- `/inscripcion`: Un endpoint con trabajo mediano, ya que debe ser una acción atómica para proveer control de concurrencia, para evitar que se anoten más alumnos que el cupo disponible
+- `/cerrar_sesion`: Un endpoint inmediato
 
 Este escenario planteado se puede ver en `perf/siu.yaml` y se refiere a una sola franja horaria de 30 minutos con 100 alumnos.
+
+### Simulaciones
+
+Nuestra simulación consiste en tener al `70%` de los `100` alumnos inscribiendose en los primeros `5` minutos, y al resto en los restantes `25`.
+
+![Escenarios creados en una sola franja horaria](test_runs/siu/node-scenarios-halfhour.png)
+
+Por empezar podemos ver que los tiempos de respuesta en dos franjas horarias reciben dos picos: cada uno al comienzo de cada media hora.
+
+![Tiempo de respuesta visto por el cliente en dos franjas horarias](test_runs/siu/node-response-client-one-hour.png)
+
+![Tiempo de respuesta visto por el servidor en dos franjas horarias](test_runs/siu/node-response-server-one-hour.png)
+
+Poniendo la lupa en una sola franja horaria, podemos notar como son estos picos.
+
+![Recursos en una franja horaria](test_runs/siu/node-resources-peak.png)
+
+![Tiempo de respuesta visto por el cliente en una franja horaria](test_runs/siu/node-response-client-halfhour.png)
+
+![Estado de los requests recibidos en una franja horaria](test_runs/siu/node-requests-halfhour.png)
+
+Algo que se puede notar en estos gráficos es que, a las `23:18hs`, cuando el tiempo de respuesta llega a su máximo, es cuando aparece el primer (y único) error en el sistema: hubo un `ETIMEOUT`. Con estas pruebas podemos ir encontrando las limitaciones de nuestro sistema, e ir pensando como poder evitar este tipo de errores.
+
+Entonces, tenemos que empezar a intentar mitigar estos errores. La solución más obvia, que no cambie funcionalidad, es la de replicar el sistema.
+
+![Recursos del sistema replicado en una franja horaria](test_runs/siu/many-resources-halfhour.png)
+
+![Tiempo de respuesta visto por el cliente del sistema replicado en una franja horaria](test_runs/siu/many-response-client-halfhour.png)
+
+Podemos notar que en el sistema replicado se puede ver todo mucho más _plano_. Si bien hay consumos de recursos mayores al comienzo de la franja horaria, podemos ver que los tiempos de respuesta ahora son constantes. Al tener más nodos, en vez de estar sobrecargando uno único, estamos pudiendo entregarle a cada alumno una experiencia de tiempos similar, lo cual se nos acerca al ideal.
 
 [^1]: [Blog de Nico Paez](https://blog.nicopaez.com/2021/05/23/sobre-las-estadisticas-de-inscriptos-en-fiuba/) - [Padrón de Estudiantes Regulares 2022](https://cms.fi.uba.ar/uploads/PADRON_DEFINITIVO_ESTUDIANTES_2022_MESAS_1_429d2abc05.pdf) - [Infobae](https://www.infobae.com/educacion/2022/05/23/63-mil-anotados-al-cbc-de-la-uba-cuales-fueron-las-carreras-mas-elegidas-las-que-mas-crecieron-y-cayeron/)
 
