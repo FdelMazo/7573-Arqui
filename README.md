@@ -289,7 +289,7 @@ Desde el punto de vista del sistema:
     - De lunes a viernes tenemos 18 * 5 => 90 franjas
     - 10 mil alumnos en 90 franjas => ~100 alumnos activos en el sistema en cualquier (media) hora dada[^3]
 
-- Asumiendo la ansiedad del alumnado, vamos a asumir que, si bien hay 30 minutos para inscribirse, la mayoría de los alumnos (75%) de una franja horaria se inscribiran en los primeros 10 minutos de la franja, y el resto lo hará mas relajadamente en lo que queda de la media hora.
+- Asumiendo la ansiedad del alumnado, vamos a asumir que, si bien hay 30 minutos para inscribirse, la mayoría de los alumnos de una franja horaria se inscribiran en los primeros 10 minutos de la franja, y el resto lo hará mas relajadamente en lo que queda de la media hora.
 
 Habiendo marcado todas estas suposiciones e hipótesis, lo que pretendemos es:
 
@@ -300,7 +300,7 @@ Habiendo marcado todas estas suposiciones e hipótesis, lo que pretendemos es:
     - `/inscripcion`: Un endpoint con trabajo mediano, ya que debe ser una acción atómica para proveer control de concurrencia, para evitar que se anoten más alumnos que el cupo disponible
     - `/cerrar_sesion`: Un endpoint inmediato
 
-Este escenario planteado se puede ver en `perf/siu.yaml`.
+Este escenario planteado se puede ver en `perf/siu.yaml` y se refiere a una sola franja horaria de 30 minutos con 100 alumnos.
 
 [^1]: [Blog de Nico Paez](https://blog.nicopaez.com/2021/05/23/sobre-las-estadisticas-de-inscriptos-en-fiuba/) - [Padrón de Estudiantes Regulares 2022](https://cms.fi.uba.ar/uploads/PADRON_DEFINITIVO_ESTUDIANTES_2022_MESAS_1_429d2abc05.pdf) - [Infobae](https://www.infobae.com/educacion/2022/05/23/63-mil-anotados-al-cbc-de-la-uba-cuales-fueron-las-carreras-mas-elegidas-las-que-mas-crecieron-y-cayeron/)
 
