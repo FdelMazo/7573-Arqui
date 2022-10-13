@@ -172,6 +172,8 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 
 ![](test_runs/load/work/node/requests_state.png)
 
+Se puede observar que todos los requests fueron completados con éxitos y no hubo errores ni pendientes. Aunque este proceso no es tan trivial como el ping, tampoco requiere demasiado procesamiento. 
+
 **Tiempo de respuesta visto por el cliente**
 
 ![](test_runs/load/work/node/response_time_client.png)
@@ -180,10 +182,19 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 
 ![](test_runs/load/work/node/response_time_server.png)
 
+
+Acá también se pueden apreciar los tiempos de respuesta del cliente y del servicio, además de la mediana y el máximo de cada uno.
+
+La mediana tiene un valor mayor al del ping dado que el procesamiento de este endpoint demanda un mayor tiempo.
+
+Se puede observar que los tiempos de respuesta tanto del cliente como del servidor se mantienen prácticamente constantes durante todo el test de carga, creciendo ligeramente cuando se aumenta la carga. 
+
+
 **Recursos utilizados**
 
 ![](test_runs/load/work/node/resources_node_5.png)
 
+En este gráfico se puede observar que el uso de CPU fluctúa, pero se sigue manteniendo bajo y coincide con el análisis de los gráficos mostrados anteriormente. La memoria, se mantiene constante dado que no se realizan operaciones de escritura.
 
 ### Replicado (Cinco nodos)
 
@@ -193,6 +204,8 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 
 ![](test_runs/load/work/many/requests_state.png)
 
+Se puede observar que, como sucede con un nodo, todos los requests se completan de manera exitosa y no existen errores ni pendientes.
+
 **Tiempo de respuesta visto por el cliente**
 
 ![](test_runs/load/work/many/response_time_client.png)
@@ -201,9 +214,13 @@ En este caso se muestran los recursos utilizados por un solo nodo, los cuales se
 
 ![](test_runs/load/work/many/response_time_server.png)
 
+Los tiempos de respuesta se mantienen bajos y condice lo observado para el cliente y para el servidor, comenzando bajo y subiendo ligeramente en la mitad de la prueba. 
+
 **Recursos utilizados**
 
 ![](test_runs/load/work/many/resources_node_5.png)
+
+Se muestran los recursos utilizados por un solo nodo, que se mantienen muy bajos a pesar de la carga y nuevamente se debe a que el endpoint no necesita utilizar gran cantidad de CPU. 
 
 ## Sync/Async
 
