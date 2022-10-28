@@ -1,0 +1,34 @@
+- name: Update VMSS app
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Copy files
+      copy:
+        src: ./vmss
+        dest: ~/.
+        owner: azureuser
+        group: azureuser
+        directory_mode: '0755'
+        mode: preserve
+    - name: Copy VMSS key
+      copy:
+        src: ./key.pem
+        dest: ~/vmss
+        owner: azureuser
+        group: azureuser
+        mode: '0400'
+    - name: Setup Node VMSS
+      shell: ./setup.sh
+      args:
+        chdir: vmss/
+    - name: Copy app archive
+      copy:
+        src: ../node/src.zip
+        dest: ~/vmss/.
+        owner: azureuser
+        group: azureuser
+        mode: '0644'
+    - name: Deploy app
+      command: ./deploy.sh
+      args:
+        chdir: vmss/

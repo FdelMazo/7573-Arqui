@@ -1,0 +1,24 @@
+- name: Setup VMSS nodes
+  hosts: all
+  gather_facts: no
+  roles:
+    - { role: datadog.datadog, become: yes }
+  vars:
+    datadog_api_key: "{{ lookup('file', './ddog_api_key') }}"
+  tasks:
+    - name: Install unzip
+      apt:
+        name: unzip
+        state: present
+      become: yes
+    - name: Install node
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+        apt-get install -y nodejs
+      args:
+        creates: /usr/bin/node
+      become: yes
+    - name: Install pm2
+      command: npm install pm2@latest -g
+      become: yes
+      

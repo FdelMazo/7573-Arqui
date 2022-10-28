@@ -1,0 +1,43 @@
+- name: Install Ansible on Management VM
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Install Ansible
+      apt:
+        pkg:
+          - python-apt
+          - ansible
+        state: present
+        update_cache: yes
+        cache_valid_time: 86400
+      become: yes
+    - name: Install Datadog role
+      command: ansible-galaxy install datadog.datadog
+- name: Copy Python management files
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Copy files
+      copy:
+        src: ./python
+        dest: ~/.
+        owner: azureuser
+        group: azureuser
+        directory_mode: '0755'
+        mode: preserve
+    - name: Copy Python key
+      copy:
+        src: ./key.pem
+        dest: ~/python
+        owner: azureuser
+        group: azureuser
+        mode: '0400'
+- name: Setup Python VM
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Setup Python app
+      shell: ./setup.sh
+      args:
+        chdir: python/
+      

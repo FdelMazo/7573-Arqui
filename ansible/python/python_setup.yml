@@ -1,0 +1,41 @@
+- name: Setup Python VM
+  hosts: all
+  gather_facts: no
+  roles:
+    - { role: datadog.datadog, become: yes }
+  vars:
+    datadog_api_key: "{{ lookup('file', './ddog_api_key') }}"
+    app_root: "~/app"
+  tasks:
+    - name: Install dependencies
+      apt:
+        pkg:
+          - python-pip
+          - python-setuptools
+        state: present
+      become: yes
+    - name: Create app directory
+      file:
+        path: "{{ app_root }}"
+        owner: azureuser
+        group: azureuser
+        state: directory
+        mode: '0755'
+    - name: Upload app
+      copy:
+        src: ./app.py
+        dest: "{{ app_root }}"
+    - name: Upload requirements
+      copy:
+        src: ./requirements.txt
+        dest: "{{ app_root }}"
+    - name: Install requirements
+      pip:
+        requirements: "{{ app_root }}/requirements.txt"
+    - name: Kill old app (if running)
+      shell: pkill gunicorn || true
+    - name: Start python app
+      shell: "source ~/.profile && cd {{ app_root }} && gunicorn --daemon -w 1 app:app -b :3000 --statsd-host localhost:8125 --error-logfile ../gunicorn.err > ../gunicorn.out"
+      args:
+        executable: /bin/bash
+      
