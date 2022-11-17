@@ -25,3 +25,6 @@ src.zip
 pubkey
 *.pem
 *.bak
+
+terraform.tfvars
+.terraform.lock.hcl
