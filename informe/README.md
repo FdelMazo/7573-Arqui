@@ -10,19 +10,19 @@ Comenzamos el analisis ejecutando un escenario de prueba con un solo nodo. Las f
 
 Ejecutando artillery vemos los siguientes graficos.
 
-!(./img/1node-prueba1-requests.png)
+![grafico](img/1node-prueba1-requests.png)
 
 En este primer grafico apreciamos la cantidad de requests por segundo que se le envian al servidor de node.
 
-!(./img/1node-prueba1-users.png)
+![grafico](img/1node-prueba1-users.png)
 
 En este grafico podemos ver en verde los requests enviados que lograron completarse exitosamente, mientras que en rojo vemos aquellos requests que fallaron. Estamos en un escenario donde apenas se empiezan a aumentar la cantidad de requests por segundo, los mismos empiezan a fallar.
 
-!(./img/1node-prueba1-response.png)
+![grafico](img/1node-prueba1-response.png)
 
 En este grafico podemos apreciar el tiempo de respuesta de los requests. Vemos que si bien inicialmente el tiempo se mantiene constante, en un determinado punto empieza a aumentar muy rapidamente. Este momento coincide con el momento donde se comenzaron a enviar mas requests por segundo (esto podemos constatarlo con el grafico anterior). Luego directamente el servidor deja de responder, presumiblemente por la cantidad de requests que se acumularon. Vemos que ambos graficos tienen sentido juntos.
 
-!(./img/1node-prueba1-server.png)
+![grafico](img/1node-prueba1-server.png)
 
 En este grafico podemos ver el tiempo de respuesta que demora el servidor de node, y vemos como este tiempo se mantiene constante inicialmente y luego comienza a aumentar cuasi-linealmente.
 
@@ -31,15 +31,15 @@ Lo que podemos inferir de este primer analisis es que al enviarle una request po
 
 Ahora repetiremos el escenario antes presentado pero en lugar de llegar a 5 requests por segundo, llegaremos a 3 requests por segundo.
 
-!(./img/1node-prueba2-requests.png)
+![grafico](img/1node-prueba2-requests.png)
 
 Vemos en este grafico, similar al presentado en la prueba anterior, las requests por segundo que se le envian al servidor de node.
 
-!(./img/1node-prueba2-users.png)
+![grafico](img/1node-prueba2-users.png)
 
-!(./img/1node-prueba2-response.png)
+![grafico](img/1node-prueba2-response.png)
 
-!(./img/1node-prueba2-server.png)
+![grafico](img/1node-prueba2-server.png)
 
 Vemos un caso similar al anterior, donde las requests que envia el usuario inicialmente tienen resultados satisfactorios pero luego de que comienzan a aumentar las requests por segundo, el servidor cada vez tarda mas, es decir aumenta su tiempo de respuesta, y aumentan tambien la cantidad de requests fallidas.
 
@@ -47,13 +47,13 @@ La diferencia de este caso con el anterior es que aquí se tarda mas tiempo en s
 
 Ahora volveremos a reducir la cantidad de requests por segundo, esta vez llegaremos a 2 requests por segundo. Obtenemos los siguientes graficos que analizaremos luego de presentarlos:
 
-!(./img/1node-prueba3-requests.png)
+![grafico](img/1node-prueba3-requests.png)
 
-!(./img/1node-prueba3-users.png)
+![grafico](img/1node-prueba3-users.png)
 
-!(./img/1node-prueba3-response.png)
+![grafico](img/1node-prueba3-response.png)
 
-!(./img/1node-prueba3-server.png)
+![grafico](img/1node-prueba3-server.png)
 
 Nuevamente podemos apreciar que el servidor se satura, pero siguiendo con la tendencia del anterior experimento, vemos que tarda mas en hacerlo y que la cantidad de requests completados es aun mayor. Lo que nos esta indicando esto es que la cantidad que puede manejar una sola replica de node, sin que se vea afectada su performance, es entre 1 y 2 requests por segundo. 
 
