@@ -8,6 +8,8 @@ config:
         tags:
           - "test:{{ $processEnvironment.ENDPOINT }}"
   phases:
+    - name: Pause
+      pause: 5
     - name: WarmUp
       duration: 60
       arrivalRate: 1
