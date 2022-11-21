@@ -17,11 +17,11 @@ $ curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote"
 {"id":1}
 ```
 
-Los casos que queremos analizar son:
+Las tres configuraciones que queremos analizar son:
 
-- ¿Qué pasa si solo tengo una instancia de `node`?
-- ¿Qué pasa si el cluster, cual load balancer, delega a 3 instancias de `node`?
-- ¿Qué pasa si a una única instancia de `node` le agrego una cache de `Redis`?
+- ¿Qué pasa si solo tenemos una instancia de `node`?
+- ¿Qué pasa si el cluster delega a 3 instancias de `node` balanceando la carga?
+- ¿Qué pasa si a una única instancia de `node` le agregamos una cache de `Redis`?
 
 ---
 
@@ -43,31 +43,31 @@ http.requests: .................................................................
 http.request_rate: ............................................................. 2/sec
 ```
 
-El escenario corrido finalmente impacta en Datadog, ya que todos los componentes de nuestro sistema tienen distintos agentes que reportan métricas. Es con esto que nos vamos a dar una idea de donde estan los distintos cuellos de botella que buscamos.
+El escenario corrido finalmente se refleja en Datadog, ya que todos los componentes de nuestro sistema tienen distintos agentes que reportan métricas. A partir de ello, nos daremos una idea de dónde estan los distintos cuellos de botella que limitan nuestro sistema.
 
 ![Escenario de artillery a correr sobre todas las configuraciones: `WarmUp` + `RampUp` + `Plain` + `CleanUp`](./img/general-scenario.png)
 
 \newpage
 
-Para el análisis hicimos un _dashboard_, para ver como funciona y se relaciona cada componente:
+Para el análisis hicimos un _dashboard_, para ver cómo funciona y se relaciona cada componente:
 
 ![Dashboard global del sistema](./img/general-dashboard.png)
 
-- Localmente, nos interesan las métricas que envía `artillery`
-    - Los usuarios completados y fallidos nos muestra donde esta el punto de quiebre del sistema
-    - Los requests por segundo nos muestra el patrón que armó nuestro escenario
-    - El tiempo de respuesta nos muestra el punto de vista del cliente, que nos sirve para compararlo con el resto del sistema
-    - El número total de usuarios armados nos ayuda a confirmar que estamos efectivamente analizando un escenario entero (en vez de uno parcialmente, o el fin de uno y el comienzo de otro)
-    - La latencia percibida nos da una gran idea de cuanto estamos perdiendo en el trayecto desde la computadora local hasta la instancia de la VMSS, porque surge de llamados a `/` y no a `/remote`. Es decir, al restarle este número a el tiempo de respuesta a `/remote`, podemos aproximar cuanto esta tardando la máquina de `node` en llamar a la máquina de `python`
+- Localmente, nos interesan las métricas que envía `artillery`:
+    - Los usuarios completados y fallidos nos muestran dónde está el punto de quiebre del sistema.
+    - Los requests por segundo nos muestran el patrón que armó nuestro escenario.
+    - El tiempo de respuesta nos muestra el punto de vista del cliente, que nos sirve para compararlo con el resto del sistema.
+    - El número total de requests nos ayuda a confirmar que estamos efectivamente analizando un escenario entero (en vez de uno parcialmente, o el fin de uno y el comienzo de otro).
+    - La latencia percibida nos da una gran idea de cuánto estamos perdiendo en el trayecto desde la computadora local hasta la instancia de la VMSS, porque surge de llamados a `/` y no a `/remote`. Es decir, al restarle este número al tiempo de respuesta a `/remote`, podemos aproximar cuánto está tardando la máquina de `node` en llamar a la máquina de `python`.
 
-- Luego tenemos los análisis de una de las instancias de `node`
-    - El tráfico de red, el consumo de CPU y el _load average_ nos sirven para ver como esta trabajando la máquina, y así poder buscar donde esta llegando a los picos y se esta saturando.
-    - El tiempo de respuesta ahora podemos verlo tambien desde el servidor, y compararlo con el punto de vista del cliente
+- Luego tenemos las métricas de una de las instancias de `node`:
+    - El tráfico de red, el consumo de CPU y el _load average_ nos sirven para ver cómo está trabajando la máquina, y así poder buscar dónde se producen los picos y se está saturando.
+    - El tiempo de respuesta ahora podemos verlo también desde el servidor, y compararlo con el punto de vista del cliente.
 
-- Finalmente tenemos los gráficos de la máquina de `gunicorn`, de la cual teóricamente no tenemos información ni acceso, pero que aun así nos es funcional al análisis
-    - La "alarma todo esta bien" nos muestra que... todo esta bien. Viendo el código sabemos que todos los pedidos tienen un `sleep(0.75)`. Es por eso que este gráfico _siempre_ debe ser una línea de 750 milisegundos, con o sin cortes intermedios.
-    - El tráfico de red y el _load average_ de esta máquina cumplen el mismo propósito de las instancias de `node`
-    - Los requests recibidos nos sirven para ver si efectivamente hubo un llamado a esta máquina: ya que nuestro escenario envía request frecuentemente y sin pausa, un corte nos significará que nunca hubo un llamado y que el solicitante resolvio el pedido por si mismo (con una cache!)
+- Finalmente tenemos los gráficos de la máquina de `gunicorn`, de la cual teóricamente no tenemos información ni acceso, pero que aun así nos es funcional al análisis:
+    - La "alarma todo está bien" nos muestra que el servicio está funcionando correctamente. Viendo el código sabemos que todos los pedidos tienen un `sleep(0.75)`, es por eso que este gráfico _siempre_ debe ser una línea de 750 milisegundos, con o sin cortes intermedios.
+    - El tráfico de red y el _load average_ de esta máquina cumplen el mismo propósito de las instancias de `node`.
+    - Los requests recibidos nos sirven para ver si efectivamente hubo un llamado a esta máquina: ya que nuestro escenario envía request frecuentemente y sin pausa, un corte nos significaría que nunca hubo un llamado y que el solicitante resolvió el pedido por sí mismo (con una cache!).
 
 ---
 
