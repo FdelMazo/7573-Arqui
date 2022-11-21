@@ -67,7 +67,7 @@ Para el análisis hicimos un _dashboard_, para ver cómo funciona y se relaciona
 - Finalmente tenemos los gráficos de la máquina de `gunicorn`, de la cual teóricamente no tenemos información ni acceso, pero que aun así nos es funcional al análisis:
     - La "alarma todo está bien" nos muestra que el servicio está funcionando correctamente. Viendo el código sabemos que todos los pedidos tienen un `sleep(0.75)`, es por eso que este gráfico _siempre_ debe ser una línea de 750 milisegundos, con o sin cortes intermedios.
     - El tráfico de red y el _load average_ de esta máquina cumplen el mismo propósito de las instancias de `node`.
-    - Los requests recibidos nos sirven para ver si efectivamente hubo un llamado a esta máquina: ya que nuestro escenario envía request frecuentemente y sin pausa, un corte nos significaría que nunca hubo un llamado y que el solicitante resolvió el pedido por sí mismo (con una cache!).
+    - Los requests recibidos nos sirven para ver si efectivamente hubo un llamado a esta máquina: ya que nuestro escenario envía request frecuentemente y sin pausa, un corte nos significaría que nunca hubo un llamado y que el solicitante resolvió el pedido por sí mismo (¡con una cache!).
 
 ---
 
@@ -80,11 +80,11 @@ TO DO: Entonces... ¿Qué pretendemos ver?
 
 ## Estudio 1 - Node Singular
 
-La configuración a analizar consiste de una sola instancia de la máquina de `node`, sin ningun tipo de cache, que recibe todo lo que se le pregunte a la VMSS y, al recibir un pedido a `/request`, hace un llamado remoto a la máquina de `gunicorn`.
+La configuración a analizar consiste de una sola instancia de la máquina de `node`, sin ningún tipo de cache, que recibe todo lo que se le pregunte a la VMSS y, al ingresar un pedido a `/request`, hace un llamado remoto a la máquina de `gunicorn`.
 
-![Hosts al tener solo una instancia de node](./img/1node-hosts.png)
+![Hosts al tener sólo una instancia de node](./img/1node-hosts.png)
 
-Vamos a analizar una corrida de 4 minutos, 16 segundos, de la cual (sin contar los 5 usuarios creados para el `ping` inicial) se completaron exitosamente 93 de los 726 usuarios creados en el escenario.
+Vamos a analizar una corrida de 4 minutos y 16 segundos, de la cual (sin contar los 5 usuarios creados para el `ping` inicial) se completaron exitosamente 93 de los 726 usuarios creados en el escenario.
 
 ```bash
 $ ./run.sh "/remote"
@@ -104,25 +104,25 @@ vusers.created: ................................................................
 vusers.failed: ................................................................. 633
 ```
 
-Los usuarios fallidos son todos por el mismo motivo: `ETIMEDOUT`. Por defecto, `artillery` tiene un tiempo de espera de 10 segundos antes de salir con error. Este número nos parece bien elegido y no lo vamos a modificar: si un pedido tarda más de 10 segundos, vamos a tomarlo como fallido, y vamos a considerar que estamos acercandonos al punto de quiebre del sistema.
+Los usuarios fallidos son todos por el mismo motivo: `ETIMEDOUT`. Por defecto, `artillery` tiene un tiempo de espera de 10 segundos antes de salir con error. Este número nos parece apropiadamente elegido: si un pedido tarda más de 10 segundos, vamos a tomarlo como fallido, y vamos a considerar que estamos acercándonos al punto de quiebre del sistema.
 
-Ojo, esto no significa que la instancia de `node` haya dejado de funcionar. Simplemente tardo mucho en respondernos. Desde su lado, tranquilamente `node` sigue recibiendo pedidos y llamando al servicio externo. Esto lo podremos chequear más adelante!
+Como aclaración, esto no significa que la instancia de `node` haya dejado de funcionar, sino que simplemente tardó mucho en respondernos. Desde su lado, tranquilamente `node` sigue recibiendo pedidos y llamando al servicio externo. ¡Esto lo podremos chequear más adelante!
 
 ![Node Singular - Local](img/1node-artillery.png)
 
-Claramente se puede ver que el sistema comienza a fallar en la fase de `RampUp`, de manera casi instantanea: se disparan los tiempos de respuesta, y los usuarios \textcolor{Mahogany}{fallidos} comienzan a superar enteramente a los usuarios \textcolor{OliveGreen}{completados}.
+Claramente se puede ver que el sistema comienza a fallar en la fase de `RampUp`, de manera casi instántanea: se disparan los tiempos de respuesta, y los usuarios \textcolor{Mahogany}{fallidos} comienzan a superar enteramente a los usuarios \textcolor{OliveGreen}{completados}.
 
-En esta fase es en donde apenas se empiezan a aumentar la cantidad de requests a más de una por segundo. Es decir: **con solo una instancia, el sistema no tolera más de 2 usuarios por segundo**. Intentar decir "esta alrededor de 1.7 requests por segundo" es un análisis complejo: no tiene sentido en la vida real decir que mandamos 1 request y fracción de otro[^1], es decir no se pueden fraccionar los requests. Para obtener un valor exacto y que tenga sentido podriamos hablar de cada cuantos segundos mandamos un requests.
+En esta fase es en donde apenas empiezan a aumentar la cantidad de requests a más de una por segundo. Es decir: **con sólo una instancia, el sistema no tolera más de 2 usuarios por segundo**. Intentar decir "está alrededor de 1.7 requests por segundo" es un análisis complejo: no tiene sentido en la vida real decir que mandamos 1 request y fracción de otro[^1], es decir no se pueden fraccionar los requests. Para obtener un valor exacto y que tenga sentido podríamos hablar de cada cuántos segundos mandamos un nuevo request.
 
 [^1]: Como bien nos enseña el fundador de artillery en la [sección de issues](https://github.com/artilleryio/artillery/issues/279#issuecomment-289203535)
 
 ![Node Singular - Servidor Node](img/1node-node.png)
 
-Desde el punto de vista del servidor, tambien vemos que el punto de quiebre esta alrededor de las `17:31:30hs`. Es en donde comenzo el `RampUp` y es en donde se tiene el pico global de uso de CPU.
+Desde el punto de vista del servidor, también vemos que el punto de quiebre se encuentra alrededor de las `17:31:30hs`. Es en donde comienza el `RampUp` y se tiene el pico global de uso de CPU.
 
 Lo interesante del tiempo de respuesta (tanto desde el cliente como desde el servidor) es que se puede ver que es lineal en relación al `RampUp`. Comienza constante, y al empezar a recibir más de un usuario, crece linealmente.
 
-El gráfico de tráfico de red nos muestra que la instancia sigue recibiendo información: todavía está llamando al servicio externo, incluso después de haber pasado el `RampUp`. El servicio externo no estaría pareciendo ser el factor limitante, sigue funcionando! El factor limitante parece ser solamente como nuestra instancia de `node` maneja pedidos en simultaneo.
+El gráfico de tráfico de red nos muestra que la instancia sigue recibiendo información: todavía está llamando al servicio externo, incluso después de haber pasado el `RampUp`. El servicio externo no estaría pareciendo ser el factor limitante, ¡sigue funcionando! El factor limitante parece ser solamente cómo nuestra instancia de `node` maneja pedidos en simultáneo.
 
 ![Node Singular - Servicio Externo](img/1node-python.png)
 
@@ -132,8 +132,8 @@ Finalmente, podemos ver que desde el servicio externo todo funciona correctament
 
 ## Estudio 2 - Node Replicado x3
 
-Explicar como cambio el dashboard:
-- Hacer un grupo "Cluster de nodes" que tenga las 3 lineas de requests recibidos, cosa de que podamos ver a quien le esta delegando el load balancer. "Un gráfico de todas los requests de todas las instancias de `node` nos muestra como esta funcionando el _load balancer_ y si alguna instancia en particular se esta saturando más que el resto."
+Explicar cómo cambió el dashboard:
+- Hacer un grupo "Cluster de nodes" que tenga las 3 líneas de requests recibidos, cosa de que podamos ver a quién le está delegando el load balancer. "Un gráfico de todas los requests de todas las instancias de `node` nos muestra cómo está funcionando el _load balancer_ y si alguna instancia en particular se está saturando más que el resto."
 
 
 ![Hosts al tener tres instancias de node](./img/3node-hosts.png)
@@ -142,8 +142,8 @@ Explicar como cambio el dashboard:
 
 ## Estudio 3 - Node Singular con Redis
 
-Explicar como cambio el dashboard:
-- Estaria barbaro ponerle una linea en roja los 750 milisegundos. Si estas arriba de ahí, asumis que hubo llamado sin cache, si no, asumis que hubo llamado con cache.
-- Poner disk usage o algo asi? que nos da redis?
+Explicar cómo cambió el dashboard:
+- Estaría barbaro ponerle una línea en roja los 750 milisegundos. Si estás arriba de ahí, asumís que hubo llamado sin cache, si no, asumís que hubo llamado con cache.
+- Poner disk usage o algo asi? qué nos da redis?
 
-![Hosts al tener solo una instancia de node, con cache de Redis](./img/1nodecached-hosts.png)
+![Hosts al tener sólo una instancia de node, con cache de Redis](./img/1nodecached-hosts.png)
