@@ -138,6 +138,16 @@ Explicar cómo cambió el dashboard:
 
 ![Hosts al tener sólo una instancia de node, con cache de Redis](./img/1nodecached-hosts.png)
 
+![Node Singular - Local](img/cache_artillery.png)
+
+
+![Node Singular - Servidor Node](img/cache_node.png)
+
+
+![Node Singular - Servicio Externo](img/cache_python.png)
+
+
+
 \newpage
 
 ## Estudio 3 - Node Replicado x3
