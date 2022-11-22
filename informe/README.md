@@ -130,20 +130,20 @@ Finalmente, podemos ver que desde el servicio externo todo funciona correctament
 
 \newpage
 
-## Estudio 2 - Node Replicado x3
-
-Explicar cómo cambió el dashboard:
-- Hacer un grupo "Cluster de nodes" que tenga las 3 líneas de requests recibidos, cosa de que podamos ver a quién le está delegando el load balancer. "Un gráfico de todas los requests de todas las instancias de `node` nos muestra cómo está funcionando el _load balancer_ y si alguna instancia en particular se está saturando más que el resto."
-
-
-![Hosts al tener tres instancias de node](./img/3node-hosts.png)
-
-\newpage
-
-## Estudio 3 - Node Singular con Redis
+## Estudio 2 - Node Singular con Redis
 
 Explicar cómo cambió el dashboard:
 - Estaría barbaro ponerle una línea en roja los 750 milisegundos. Si estás arriba de ahí, asumís que hubo llamado sin cache, si no, asumís que hubo llamado con cache.
 - Poner disk usage o algo asi? qué nos da redis?
 
 ![Hosts al tener sólo una instancia de node, con cache de Redis](./img/1nodecached-hosts.png)
+
+\newpage
+
+## Estudio 3 - Node Replicado x3
+
+Explicar cómo cambió el dashboard:
+- Hacer un grupo "Cluster de nodes" que tenga las 3 líneas de requests recibidos, cosa de que podamos ver a quién le está delegando el load balancer. "Un gráfico de todas los requests de todas las instancias de `node` nos muestra cómo está funcionando el _load balancer_ y si alguna instancia en particular se está saturando más que el resto."
+
+
+![Hosts al tener tres instancias de node](./img/3node-hosts.png)
