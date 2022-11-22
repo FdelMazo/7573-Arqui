@@ -83,3 +83,18 @@ resource "azurerm_lb_backend_address_pool" "lb_backend_address_pool" {
   loadbalancer_id = azurerm_lb.tp2_lb.id
   name            = "lb_backend_address_pool"
 }
+
+resource "azurerm_redis_cache" "nodecache" {
+  name                = "nodecache"
+  location            = azurerm_resource_group.tp2_resource_group.location
+  resource_group_name = azurerm_resource_group.tp2_resource_group.name
+  capacity            = 2
+  family              = "C"
+  sku_name            = "Standard"
+  enable_non_ssl_port = true
+
+  # Store redis client
+  provisioner "local-exec" {
+    command = "sed -Ei.bak \"s/(host:)[^,]*,/\\1 '${azurerm_redis_cache.nodecache.hostname}',/\" node/config.js"
+  }
+}
