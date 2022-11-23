@@ -132,21 +132,29 @@ Finalmente, podemos ver que desde el servicio externo todo funciona correctament
 
 ## Estudio 2 - Node Singular con Redis
 
-Explicar cómo cambió el dashboard:
-- Estaría barbaro ponerle una línea en roja los 750 milisegundos. Si estás arriba de ahí, asumís que hubo llamado sin cache, si no, asumís que hubo llamado con cache.
-- Poner disk usage o algo asi? qué nos da redis?
+En este escenario, analizamos la configuración de una sola máquina de `node`, pero con un cache de Redis intermedio entre `node` y el servicio externo en `python`. En el Estudio 1 vimos que el cuello de botella se encontraba en el servicio externo, por lo tanto nuestra hipótesis es que agregando una cache intermedia los tiempos de respuesta van a mejorar sustancialmente.
+
+La prueba de Artillery realizada fue la misma que en el Estudio 1, con las fases de ping, warm up, rump up y plain y usando el endpoint `remote/cached`.
+
+Además, cabe aclarar que para estos escenarios utilizamos una configuración de `cacheKeyLength` de 10. Esto define el tamaño de la cache y por tanto la cantidad de keys que va a soportar Redis, por lo que mientras más grande sea, más requests serán necesarias para llenarla. Al ser de tamaño 10, los primeros 10 requests no hacen hit en la cache y siguen de largo hacia el servicio externo, pero a partir del request 11, se empieza a usar la cache.
 
 ![Hosts al tener sólo una instancia de node, con cache de Redis](./img/1nodecached-hosts.png)
 
-![Node Singular - Local](img/cache_artillery.png)
+
+![Node Cache - Local](img/cache_artillery.png)
+
+En las métricas del lado de Artillery (usuario), podemos apreciar, en primer lugar, que todos los requests del escenario fueron completados con éxito sin fallas, esto nos da un indicio de que la mejora aplicada fue de utilidad.
+
+Si observamos el tiempo de respuesta, vemos como hay un pico al inicio y después se desciende y se mantiene constante en un nivel muy bajo. El pico se condice con los primeros 10 requests que `node` hace a `python` y no están cacheados aún. El descenso y planicie comienzan partir del siguiente request, donde todos empiezan a ser hit en la caché y no hay necesidad de tener que llegar al servicio externo.
+
+![Node Cache - Servidor Node](img/cache_node.png)
+
+Observando las métricas del lado del servidor de `node`, vemos que el tiempo de carga promedio y el tiempo de respuesta tienen sus máximos al comienzo, mientras se llena la cache, y luego van en descenso una vez que la cache está completa. Esto es coherente con las métricas de Artillery analizadas anteriormente.
 
 
-![Node Singular - Servidor Node](img/cache_node.png)
+![Node Cache - Servicio Externo](img/cache_python.png)
 
-
-![Node Singular - Servicio Externo](img/cache_python.png)
-
-
+Por último, si vemos del lado de `python`, notamos que la cantidad de requests recibidos son 10 en total (7, 2 y 1). Esto confirma el hecho de que estamos usando una cache de tamaño 10 y que una vez llena, todos los requests que saldrían de `node` hacia `python` no se terminan haciendo porque su respuesta ya se encuentra en Redis.
 
 \newpage
 
