@@ -158,10 +158,46 @@ Por último, si vemos del lado de `python`, notamos que la cantidad de requests 
 
 \newpage
 
-## Estudio 3 - Node Replicado x3
+## Estudio 3 - Node Replicado x2
 
 Explicar cómo cambió el dashboard:
 - Hacer un grupo "Cluster de nodes" que tenga las 3 líneas de requests recibidos, cosa de que podamos ver a quién le está delegando el load balancer. "Un gráfico de todas los requests de todas las instancias de `node` nos muestra cómo está funcionando el _load balancer_ y si alguna instancia en particular se está saturando más que el resto."
 
 
 ![Hosts al tener tres instancias de node](./img/3node-hosts.png)
+
+Para este analisis se utilizaran dos instancias de node, debido a que nuestra cuenta de azure tiene un limite de 4 maquinas virtuales, entonces usaremos mgmt + python + node1 + node2. 
+
+![VMS de azure](./img/vms.jpg)
+
+En este caso seguimos utilizando pruebas de artillery, con escenarios de pause, warm up, ramp up y plain y usando el endpoint /remote/. Inicialmente lo que esperariamos ver es un escenario mas parecido al caso 1, donde efectivamente veamos que nuevamente se sobrecargue el sistema debido a la ausencia de cache.
+
+![Node Replicated - Artillery](img/replicated_artillery.png)
+
+Viendo inicialmente las metricas provistas por artillery, podemos ver que efectivamente se sobrecarga el sistema. Esto podemos notarlo en el grafico de "Usuarios en escenario" ya que durante lo que es la fase de ramp up comienzan a verse usuarios fallidos hasta superar totalmente a los usuarios completados.
+
+A su vez en el grafico de "Tiempo de respuesta" podemos ver como el mismo comienza a aumentar bastante en el mismo momento que comienza a sobrecargarse el sistema con usuarios.
+
+Respecto a los gaficos que habiamos observado cuando usamos una unica instancia de node, podemos ver que la performance no mejora practicamente nada. El motivo de esto es que el cuello de botella que genera la caída de rendimiento y la perdida de requests esta en el servicio externo! Por eso, a pesar de agregar una nueva instancia de node no vemos mejoras, porque el problema nunca fue nuestra instancia de node.
+
+Esta ultima afirmación constata con el caso anterior, donde vimos que al agregar una cache entre nuestra instancia de node y el servicio externo de python, si vimos una gran mejora en el rendimiento.
+
+![Node Replicated - Node](img/replicated_node.png)
+
+Desde el punto de vista del servidor, también vemos que el punto de quiebre se encuentra aproximadamente en el momento en que comienza el RampUp.
+
+Nuevamente el tiempo de respuesta del servidor tiene una forma lineal en relación al RampUp. Comienza constante, y al empezar a recibir más de un usuario, crece linealmente.
+
+![Node Replicated - Servicio Externo](img/replicated_python.png)
+
+En esta imagen, podemos apreciar que en el servicio externo todo funciona correctamente. Se recibieron todos los requests, se manejaron correctamente, y siempre se mantuvo constante el tiempo de demora de 750ms.
+
+Si bien replicar el servidor de node no es la solución al problema analizado en este trabajo, si tiene utilidades. Supongamos el sistema con cache que mostramos en el item anterior, si a ese sistema se le enviaran muchisimas requests por segundo es probable que el mismo colapse pero no por la cache, sino porque la unica replica de node que funciona alli no puede manejar tantos requests (antes de enviarselos al servicio externo). En ese caso, si seria util tener mas replicas de node para poder distribuir la carga entre ellas antes de enviar sus respectivos requests al servicio externo con cache en el medio.
+
+## Conclusiones
+
+En el presente trabajo practico pudimos comprender y poner en practica diversos conceptos y herramientas como fueron servicios cloud, herramientas de monitoreo cloud, ansible, una gama de servicios de Azure, y demas.
+
+Nos fue posible entender que se nos estaba pidiendo y como lograrlo, ademas de formular hipotesis sobre los resultados que creimos que ibamos a obtener. Luego tuvimos la oportunidad de verificar dichas hipótesis contra con las metricas que obtuvimos, y conseguimos comprobar algunas y descartar otras.
+
+Pudimos comprender como resolver el problema planteado, lo cual resulto muy provechoso para entender como funcionan los servicios cloud y como se pueden utilizar para resolver problemas de esta naturaleza. Vimos que si bien uno podria suponer que agregar replicas de node parecia la forma de llevar a cabo el problema propuesto, lo que habia que hacer realmente era determinar donde estaba efectivamente el problema, que en este caso era el servicio externo, para poder dirimir asi la mejor forma de solucionar dicha situación.
