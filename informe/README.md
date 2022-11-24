@@ -123,13 +123,13 @@ Lo interesante del tiempo de respuesta (tanto desde el cliente como desde el ser
 
 Finalmente, podemos ver que desde el servicio externo todo funciona de manera estable. Se reciben pedidos y siempre se mantuvo constante el tiempo de demora de 750ms.
 
-Sin embargo, algo que se puede notar en el gráfico es que incluso a las `17:35hs` el servicio externo sigue recibiendo pedidos en el patrón `Plain` en vez de `CleanUp`. Pero, conociendo nuestro escenario corrido, sabemos que para esta hora deberíamos estar dejando de recibir requests. Entonces, ¿dónde estan los pedidos que faltan?
+Sin embargo, algo que se puede notar en el gráfico es que incluso a las `17:35hs` el servicio externo sigue procesando pedidos en el patrón `Plain` en vez de `CleanUp`. Pero, conociendo nuestro escenario corrido, sabemos que para esta hora deberíamos estar dejando de recibir requests. Entonces, ¿dónde están los pedidos que faltan?
 
 ![Node Singular - Pedidos al servicio externo](./img/1node-pythonreqs.png)
 
-Si nos fijamos una franja horaria más extensa podemos confirmar que todos los pedidos se están recibiendo, pero en el rango de 10 minutos en vez de 5. Con este dato faltante podemos terminar nuestro rompecabezas y concluir que el cuello de botella esta en el pedido entre `node` y `python`.
+Si nos fijamos una franja horaria más extensa podemos confirmar que todos los pedidos se completaron, pero en el rango de 10 minutos en vez de 5. Con este dato faltante podemos terminar nuestro rompecabezas y concluir que el cuello de botella esta en el pedido entre `node` y `python`.
 
-Lo que asumimos que sucede es que `node` de manera asincrona envía todos los pedidos que recibe al servidor externo, mientras que `python` por su lado va encolando cada respuesta que dará. Por lo tanto, al solo tener una instancia que se queda esperando la respuesta del servicio externo, para así responderle al cliente, todo el proceso se ve bastante demorado y casi todas las respuestas terminan superando los 10 segundos de _time out_ que marcamos.
+Lo que asumimos que sucede es que `node` de manera asíncrona envía todos los pedidos que recibe al servidor externo, mientras que `python` por su lado los va encolando y resolviendo secuencialmente. Por esto mismo, 726 requests completados, a razón de al menos 750ms en dar la respuesta por cada uno resulta en (((726 * 750ms) / 1000) / 60s) = 9.075 minutos, que es la cota inferior de lo que tarda el servicio externo en responder a esa cantidad de requests. Por lo tanto, al sólo tener una instancia de node que se queda esperando la respuesta del servicio externo, para así responderle al cliente, todo el proceso se ve bastante demorado y casi todas las respuestas terminan superando los 10 segundos de _time out_ que marcamos.
 
 \newpage
 
@@ -190,7 +190,7 @@ Observando las métricas del lado del servidor de `node`, vemos que el tiempo de
 
 Por último, si vemos del lado de `python`, notamos que la cantidad de requests recibidos son 10 en total (7, 2 y 1). Esto confirma el hecho de que estamos usando una cache de tamaño 10 y que una vez llena, todos los requests que saldrían de `node` hacia `python` no se terminan haciendo porque su respuesta ya se encuentra en Redis.
 
-La alarma todo esta bien nos muestra exáctamente lo que dijimos que mostraría: una linea constante con un corte. Atiende los primeros 10 pedidos, y luego deja de llamarse al `sleep` de `python`. Si tuviesemos el ambiente con 2 replicas, acá veríamos dos líneas entrecortadas.
+La alarma todo esta bien nos muestra exáctamente lo que dijimos que mostraría: una línea constante con un corte. Atiende los primeros 10 pedidos, y luego deja de llamarse al `sleep` de `python`. Si tuviesemos el ambiente con 2 réplicas, acá veríamos dos líneas entrecortadas.
 
 Realizamos además, una segunda prueba donde enviamos 50 requests por segundo:
 
