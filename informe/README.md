@@ -75,7 +75,7 @@ Para el análisis hicimos un _dashboard_[^1], para ver cómo funciona y se relac
 
 ## Estudio 1 - Node Singular
 
-La configuración a analizar consiste de una sola instancia de la máquina de `node`, sin ningún tipo de cache, que recibe todo lo que se le pregunte a la VMSS y, al ingresar un pedido a `/request`, hace un llamado remoto a la máquina de `gunicorn`.
+La configuración a analizar consiste de una sola instancia de la máquina de `node`, sin ningún tipo de cache, que recibe todo lo que se le pregunte a la VMSS y, al ingresar un pedido a `/remote`, hace un llamado remoto a la máquina de `gunicorn`.
 
 ![Hosts al tener sólo una instancia de node](./img/1node-hosts.png)
 
