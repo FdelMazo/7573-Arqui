@@ -184,6 +184,8 @@ Por último, si vemos del lado de `python`, notamos que la cantidad de requests 
 
 La alarma todo esta bien nos muestra exáctamente lo que dijimos que mostraría: una linea constante con un corte. Atiende los primeros 10 pedidos, y luego deja de llamarse al `sleep` de `python`. Si tuviesemos el ambiente con 2 replicas, acá veríamos dos lineas entrecortadas.
 
+<!-- TO DO: Poner aca screenshot de la corrida de juampi que fue mas intensa, escribir que a mano hicimos algo mas picante y que aun asi se la banco la cache -->
+
 \newpage
 
 ## Estudio 3 - Node Replicado x2
