@@ -121,7 +121,15 @@ Lo interesante del tiempo de respuesta (tanto desde el cliente como desde el ser
 
 ![Node Singular - Servicio Externo](img/1node-python.png)
 
-Finalmente, podemos ver que desde el servicio externo todo funciona correctamente. Se recibieron todos los requests, se manejaron correctamente, y siempre se mantuvo constante el tiempo de demora de 750ms.
+Finalmente, podemos ver que desde el servicio externo todo funciona de manera estable. Se reciben pedidos y siempre se mantuvo constante el tiempo de demora de 750ms.
+
+Sin embargo, algo que se puede notar en el gráfico es que incluso a las `17:35hs` el servicio externo sigue recibiendo pedidos en el patrón `Plain` en vez de `CleanUp`. Pero, conociendo nuestro escenario corrido, sabemos que para esta hora deberíamos estar dejando de recibir requests. Entonces, ¿dónde estan los pedidos que faltan?
+
+![Node Singular - Pedidos al servicio externo](./img/1node-pythonreqs.png)
+
+Si nos fijamos una franja horaria más extensa podemos confirmar que todos los pedidos se están recibiendo, pero en el rango de 10 minutos en vez de 5. Con este dato faltante podemos terminar nuestro rompecabezas y concluir que el cuello de botella esta en el pedido entre `node` y `python`.
+
+Lo que asumimos que sucede es que `node` de manera asincrona envía todos los pedidos que recibe al servidor externo, mientras que `python` por su lado va encolando cada respuesta que dará. Por lo tanto, al solo tener una instancia que se queda esperando la respuesta del servicio externo, para así responderle al cliente, todo el proceso se ve bastante demorado y casi todas las respuestas terminan superando los 10 segundos de _time out_ que marcamos.
 
 \newpage
 
