@@ -184,7 +184,21 @@ Por último, si vemos del lado de `python`, notamos que la cantidad de requests 
 
 La alarma todo esta bien nos muestra exáctamente lo que dijimos que mostraría: una linea constante con un corte. Atiende los primeros 10 pedidos, y luego deja de llamarse al `sleep` de `python`. Si tuviesemos el ambiente con 2 replicas, acá veríamos dos lineas entrecortadas.
 
-<!-- TO DO: Poner aca screenshot de la corrida de juampi que fue mas intensa, escribir que a mano hicimos algo mas picante y que aun asi se la banco la cache -->
+Realizamos además, una segunda prueba donde enviamos 50 requests por segundo:
+
+![Node Cache - Local](img/cache_50req_artillery.png)
+
+Según las métricas desde el lado de artillery, nuevamente todos los request fueron completados sin fallas. Si bien esta cantidad supera a la cantidad de requests de la primera prueba, vemos que esto no genera un problema para el sistema ya que puede manejarlos de manera óptima.
+
+![Node Cache - Servidor Node](img/cache_50req_node.png)
+
+<!-- Load average no debería iniciar siendo mayor también en este caso? -->
+
+![Node Cache - Servicio Externo](img/cache_50req_python.png)
+
+Observando del lado de `python`, vemos que sucede lo mismo que en la primer prueba de este mismo estudio ya que el tamaño de la cache sigue siendo 10. Entonces, al igual que antes, los requests que saldrían de `node` hacia `python` no se terminan haciendo porque su respuesta ya se encuentra en Redis.
+
+Podemos concluir para este estudio que el hecho de agregar una cache intermedia, al menos con el tamaño de cache propuesto (10), minimiza el cuello de botella que se generaba al recurrir al servicio externo.
 
 \newpage
 
