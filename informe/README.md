@@ -206,11 +206,13 @@ Para este analisis se utilizarán dos instancias de `node`[^3] y el endpoint al 
 
 [^3]: Originalmente teníamos pensado hacer un ambiente con 3 réplicas, pero nuestra suscripción actual de Azure solo nos permite tener 4 CPUs virtuales a la vez, y eso lo tenemos al límite: `mgmt`, `python`, `node1`, `node2`. ![VMS de azure](./img/vms.jpg)
 
-![Hosts al tener tres instancias de node](./img/3node-hosts.png)
+![Hosts al tener dos instancias de node](./img/3node-hosts.png)
 
-Inicialmente lo que esperaríamos ver es un escenario más parecido al caso 1, donde efectivamente veamos que nuevamente se sobrecargue el sistema debido a la ausencia de cache. Sin embargo, en este escenario pretendemos que la falla de los pedidos ocurra más adelante: ya que se introduce una mejora al replicar el servidor de `node`, suponemos que ahora nuestro sistema va a tolerar más pedidos.
+Inicialmente lo que esperaríamos ver es un escenario más parecido al caso 1, donde efectivamente veamos que nuevamente se sobrecargue el sistema debido a la ausencia de cache. Sin embargo, en este escenario pretendemos que la falla de los pedidos ocurra más adelante: ya que se introduce una mejora al replicar el servidor de `node`, suponemos que ahora nuestro sistema va a tolerar más pedidos y así proveerá un mejor servicio por un tiempo más prolongado.
 
 ![Node Replicated - Artillery](img/replicated_artillery.png)
+
+
 
 Viendo inicialmente las métricas provistas por artillery, podemos ver que efectivamente se sobrecarga el sistema y que esto sucede pasado el minuto y medio (el punto de quiebre del estudio 1), y podemos confirmar que la cantidad de usuarios completados es superior al escenario 1.
 
@@ -229,8 +231,6 @@ Nuevamente el tiempo de respuesta del servidor tiene una forma lineal en relaci�
 En esta imagen, podemos apreciar que en el servicio externo todo funciona correctamente. Se recibieron todos los requests, se manejaron correctamente, y siempre se mantuvo constante el tiempo de demora de 750ms. De la misma manera que lo vimos en el escenario uno, podemos ver como, incluso pasados los 5 minutos de corrida, sigue habiendo pedidos para procesar.
 
 Si bien replicar el servidor de node no es la solución al problema analizado en este trabajo, sí tiene utilidades. Supongamos el sistema con cache que mostramos en el item anterior, si a ese sistema se le enviaran muchísimas requests por segundo, es probable que el mismo colapse pero no por la cache, sino porque la única replica de node que funciona allí no puede manejar tantos requests (antes de enviárselos al servicio externo). En ese caso, sí sería útil tener más réplicas de node para poder distribuir la carga entre ellas antes de enviar sus respectivos requests al servicio externo con cache en el medio.
-
-\newpage
 
 ## Conclusiones
 
