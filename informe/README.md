@@ -20,10 +20,10 @@ $ curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote"
 Las tres configuraciones que queremos analizar son:
 
 - ¿Qué pasa si solo tenemos una instancia de `node`?
-- ¿Qué pasa si el cluster delega a 3 instancias de `node` balanceando la carga?
 - ¿Qué pasa si a una única instancia de `node` le agregamos una cache de `Redis`?
+- ¿Qué pasa si el cluster delega a 2 instancias de `node` balanceando la carga?
 
----
+\newpage
 
 Nuestras pruebas consisten de correr el mismo escenario de `artillery` para todas las configuraciones de nuestro sistema, para así tener puntos de comparación.
 
@@ -38,8 +38,8 @@ All VUs finished. Total time: 4 minutes, 16 seconds
 Summary report
 --------------------------------
 
-vusers.created: ................................................................ 715
-http.requests: ................................................................. 715
+vusers.created: ................................................................ 717
+http.requests: ................................................................. 717
 http.request_rate: ............................................................. 2/sec
 ```
 
@@ -49,7 +49,9 @@ El escenario corrido finalmente se refleja en Datadog, ya que todos los componen
 
 \newpage
 
-Para el análisis hicimos un _dashboard_, para ver cómo funciona y se relaciona cada componente:
+Para el análisis hicimos un _dashboard_[^1], para ver cómo funciona y se relaciona cada componente.
+
+[^1]: El dashboard fue exportado como `JSON` a `./ddog-dashboard.json` para ayudar con la réplica del estudio.
 
 ![Dashboard global del sistema](./img/general-dashboard.png)
 
@@ -68,13 +70,6 @@ Para el análisis hicimos un _dashboard_, para ver cómo funciona y se relaciona
     - La "alarma todo está bien" nos muestra que el servicio está funcionando correctamente. Viendo el código sabemos que todos los pedidos tienen un `sleep(0.75)`, es por eso que este gráfico _siempre_ debe ser una línea de 750 milisegundos, con o sin cortes intermedios.
     - El tráfico de red y el _load average_ de esta máquina cumplen el mismo propósito de las instancias de `node`.
     - Los requests recibidos nos sirven para ver si efectivamente hubo un llamado a esta máquina: ya que nuestro escenario envía request frecuentemente y sin pausa, un corte nos significaría que nunca hubo un llamado y que el solicitante resolvió el pedido por sí mismo (¡con una cache!).
-
----
-
-TO DO: Entonces... ¿Qué pretendemos ver?
-
-- Verde al principio, rojo despues en single
-- etc etc etc
 
 \newpage
 
@@ -106,15 +101,15 @@ vusers.failed: .................................................................
 
 Los usuarios fallidos son todos por el mismo motivo: `ETIMEDOUT`. Por defecto, `artillery` tiene un tiempo de espera de 10 segundos antes de salir con error. Este número nos parece apropiadamente elegido: si un pedido tarda más de 10 segundos, vamos a tomarlo como fallido, y vamos a considerar que estamos acercándonos al punto de quiebre del sistema.
 
-Como aclaración, esto no significa que la instancia de `node` haya dejado de funcionar, sino que simplemente tardó mucho en respondernos. Desde su lado, tranquilamente `node` sigue recibiendo pedidos y llamando al servicio externo. ¡Esto lo podremos chequear más adelante!
+Como aclaración, esto no significa que la instancia de `node` haya dejado de funcionar, sino que simplemente tardó mucho en respondernos. Desde su lado, tranquilamente `node` sigue recibiendo pedidos y llamando al servicio externo. Esto todavia no lo sabemos, pero lo vamos a confirmar más adelante.
 
 ![Node Singular - Local](img/1node-artillery.png)
 
 Claramente se puede ver que el sistema comienza a fallar en la fase de `RampUp`, de manera casi instántanea: se disparan los tiempos de respuesta, y los usuarios \textcolor{Mahogany}{fallidos} comienzan a superar enteramente a los usuarios \textcolor{OliveGreen}{completados}.
 
-En esta fase es en donde apenas empiezan a aumentar la cantidad de requests a más de una por segundo. Es decir: **con sólo una instancia, el sistema no tolera más de 2 usuarios por segundo**. Intentar decir "está alrededor de 1.7 requests por segundo" es un análisis complejo: no tiene sentido en la vida real decir que mandamos 1 request y fracción de otro[^1], es decir no se pueden fraccionar los requests. Para obtener un valor exacto y que tenga sentido podríamos hablar de cada cuántos segundos mandamos un nuevo request.
+En esta fase es en donde apenas empiezan a aumentar la cantidad de requests a más de una por segundo. Es decir: **con sólo una instancia, el sistema no tolera más de 2 usuarios por segundo**. Intentar decir "está alrededor de 1.7 requests por segundo" es un análisis complejo: no tiene sentido en la vida real decir que mandamos 1 request y fracción de otro[^2], es decir no se pueden fraccionar los requests. Para obtener un valor exacto y que tenga sentido podríamos hablar de cada cuántos segundos mandamos un nuevo request.
 
-[^1]: Como bien nos enseña el fundador de artillery en la [sección de issues](https://github.com/artilleryio/artillery/issues/279#issuecomment-289203535)
+[^2]: Como bien nos enseña el fundador de artillery en la [sección de issues](https://github.com/artilleryio/artillery/issues/279#issuecomment-289203535)
 
 ![Node Singular - Servidor Node](img/1node-node.png)
 
@@ -122,28 +117,59 @@ Desde el punto de vista del servidor, también vemos que el punto de quiebre se 
 
 Lo interesante del tiempo de respuesta (tanto desde el cliente como desde el servidor) es que se puede ver que es lineal en relación al `RampUp`. Comienza constante, y al empezar a recibir más de un usuario, crece linealmente.
 
-El gráfico de tráfico de red nos muestra que la instancia sigue recibiendo información: todavía está llamando al servicio externo, incluso después de haber pasado el `RampUp`. El servicio externo no estaría pareciendo ser el factor limitante, ¡sigue funcionando! El factor limitante parece ser solamente cómo nuestra instancia de `node` maneja pedidos en simultáneo.
+<!-- REVISAR El gráfico de tráfico de red nos muestra que la instancia sigue recibiendo información: todavía está llamando al servicio externo, incluso después de haber pasado el `RampUp`. El servicio externo no estaría pareciendo ser el factor limitante,: sigue funcionando. El factor limitante parece ser solamente cómo nuestra instancia de `node` maneja pedidos en simultáneo. -->
 
 ![Node Singular - Servicio Externo](img/1node-python.png)
 
-Finalmente, podemos ver que desde el servicio externo todo funciona correctamente. Se recibieron todos los requests, se manejaron correctamente,y siempre se mantuvo constante el tiempo de demora de 750ms.
+Finalmente, podemos ver que desde el servicio externo todo funciona correctamente. Se recibieron todos los requests, se manejaron correctamente, y siempre se mantuvo constante el tiempo de demora de 750ms.
 
 \newpage
 
 ## Estudio 2 - Node Singular con Redis
 
-En este escenario, analizamos la configuración de una sola máquina de `node`, pero con un cache de Redis intermedio entre `node` y el servicio externo en `python`. En el Estudio 1 vimos que el cuello de botella se encontraba en el servicio externo, por lo tanto nuestra hipótesis es que agregando una cache intermedia los tiempos de respuesta van a mejorar sustancialmente.
+En este escenario, analizamos la configuración de una sola máquina de `node`, pero con un cache de Redis intermedio entre `node` y el servicio externo en `python`.
 
-La prueba de Artillery realizada fue la misma que en el Estudio 1, con las fases de ping, warm up, rump up y plain y usando el endpoint `remote/cached`.
+```bash
+# Confirmamos que `/remote/cached` es más rápido que `/remote/`
+# Veamos el primer hit y los últimos 4, así ya tenemos la cache en uso
+$ for run in {1..15}; do time curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/;" done
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/" 1,086 total
+...
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/" 1,086 total
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/" 1,087 total
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/" 1,085 total
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/" 1,083 total
+$ for run in {1..15}; do time curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/cached"; done
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/cached" 1,128 total
+...
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/cached" 0,334 total
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/cached" 0,330 total
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/cached" 0,331 total
+{"id":1}
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/cached" 0,332 total
+
+# Por supuesto, nunca hay que olvidarse de limpiar el cache entre prueba y prueba
+curl "http://ladrillo-fdm.eastus.cloudapp.azure.com/remote/cached" -vX DELETE
+```
+
+En el Estudio 1 vimos que el cuello de botella se encontraba en el pedido al servicio externo, por lo tanto nuestra hipótesis es que agregando una cache intermedia los tiempos de respuesta van a mejorar sustancialmente.
+
+La prueba de Artillery realizada fue la misma que en el Estudio 1, con las fases de `ping`, `WarmUp`, `RampUp`, `Plain` y `CleanUp`, y usando el endpoint `/remote/cached/`.
 
 Además, cabe aclarar que para estos escenarios utilizamos una configuración de `cacheKeyLength` de 10. Esto define el tamaño de la cache y por tanto la cantidad de keys que va a soportar Redis, por lo que mientras más grande sea, más requests serán necesarias para llenarla. Al ser de tamaño 10, los primeros 10 requests no hacen hit en la cache y siguen de largo hacia el servicio externo, pero a partir del request 11, se empieza a usar la cache.
 
-![Hosts al tener sólo una instancia de node, con cache de Redis](./img/1nodecached-hosts.png)
-
-
 ![Node Cache - Local](img/cache_artillery.png)
 
-En las métricas del lado de Artillery (usuario), podemos apreciar, en primer lugar, que todos los requests del escenario fueron completados con éxito sin fallas, esto nos da un indicio de que la mejora aplicada fue de utilidad.
+En las métricas del lado de Artillery (usuario), podemos apreciar, en primer lugar, que todos los requests del escenario fueron completados con éxito sin fallas, esto nos da un indicio de que la mejora aplicada fue de grán utilidad.
 
 Si observamos el tiempo de respuesta, vemos como hay un pico al inicio y después se desciende y se mantiene constante en un nivel muy bajo. El pico se condice con los primeros 10 requests que `node` hace a `python` y no están cacheados aún. El descenso y planicie comienzan partir del siguiente request, donde todos empiezan a ser hit en la caché y no hay necesidad de tener que llegar al servicio externo.
 
@@ -156,48 +182,50 @@ Observando las métricas del lado del servidor de `node`, vemos que el tiempo de
 
 Por último, si vemos del lado de `python`, notamos que la cantidad de requests recibidos son 10 en total (7, 2 y 1). Esto confirma el hecho de que estamos usando una cache de tamaño 10 y que una vez llena, todos los requests que saldrían de `node` hacia `python` no se terminan haciendo porque su respuesta ya se encuentra en Redis.
 
+La alarma todo esta bien nos muestra exáctamente lo que dijimos que mostraría: una linea constante con un corte. Atiende los primeros 10 pedidos, y luego deja de llamarse al `sleep` de `python`. Si tuviesemos el ambiente con 2 replicas, acá veríamos dos lineas entrecortadas.
+
 \newpage
 
 ## Estudio 3 - Node Replicado x2
 
-Explicar cómo cambió el dashboard:
-- Hacer un grupo "Cluster de nodes" que tenga las 3 líneas de requests recibidos, cosa de que podamos ver a quién le está delegando el load balancer. "Un gráfico de todas los requests de todas las instancias de `node` nos muestra cómo está funcionando el _load balancer_ y si alguna instancia en particular se está saturando más que el resto."
+Para este analisis se utilizaran dos instancias de `node`[^3] y el endpoint al que llamaremos será nuevamente `/remote`, ya que no queremos utilizar ningún tipo de cache en esta configuración.
 
+[^3]: Originalmente teníamos pensado hacer un ambiente con 3 réplicas, pero nuestra suscripción actual de Azure solo nos permite tener 4 CPUs virtuales a la vez, y eso lo tenemos al límite: `mgmt`, `python`, `node1`, `node2`. ![VMS de azure](./img/vms.jpg)
 
 ![Hosts al tener tres instancias de node](./img/3node-hosts.png)
 
-Para este analisis se utilizaran dos instancias de node, debido a que nuestra cuenta de azure tiene un limite de 4 maquinas virtuales, entonces usaremos mgmt + python + node1 + node2. 
-
-![VMS de azure](./img/vms.jpg)
-
-En este caso seguimos utilizando pruebas de artillery, con escenarios de pause, warm up, ramp up y plain y usando el endpoint /remote/. Inicialmente lo que esperariamos ver es un escenario mas parecido al caso 1, donde efectivamente veamos que nuevamente se sobrecargue el sistema debido a la ausencia de cache.
+Inicialmente lo que esperariamos ver es un escenario más parecido al caso 1, donde efectivamente veamos que nuevamente se sobrecargue el sistema debido a la ausencia de cache.
 
 ![Node Replicated - Artillery](img/replicated_artillery.png)
 
-Viendo inicialmente las metricas provistas por artillery, podemos ver que efectivamente se sobrecarga el sistema. Esto podemos notarlo en el grafico de "Usuarios en escenario" ya que durante lo que es la fase de ramp up comienzan a verse usuarios fallidos hasta superar totalmente a los usuarios completados.
+Viendo inicialmente las metricas provistas por artillery, podemos ver que efectivamente se sobrecarga el sistema. Esto podemos notarlo en el grafico de "Usuarios en escenario" ya que durante lo que es la fase de `RampUp` comienzan a verse usuarios fallidos hasta superar totalmente a los usuarios completados.
 
 A su vez en el grafico de "Tiempo de respuesta" podemos ver como el mismo comienza a aumentar bastante en el mismo momento que comienza a sobrecargarse el sistema con usuarios.
 
-Respecto a los gaficos que habiamos observado cuando usamos una unica instancia de node, podemos ver que la performance no mejora practicamente nada. El motivo de esto es que el cuello de botella que genera la caída de rendimiento y la perdida de requests esta en el servicio externo! Por eso, a pesar de agregar una nueva instancia de node no vemos mejoras, porque el problema nunca fue nuestra instancia de node.
+Respecto a los gaficos que habíamos observado cuando usamos una única instancia de node, podemos ver que la performance no mejora practicamente nada. El motivo de esto es que el cuello de botella que genera la caída de rendimiento y la perdida de requests esta en el servicio externo! Por eso, a pesar de agregar una nueva instancia de node no vemos mejoras, porque el problema nunca fue nuestra instancia de node.
 
-Esta ultima afirmación constata con el caso anterior, donde vimos que al agregar una cache entre nuestra instancia de node y el servicio externo de python, si vimos una gran mejora en el rendimiento.
+Esta ultima afirmación constata con el caso anterior, donde vimos que al agregar una cache entre nuestra instancia de node y el servicio externo de python, sí vimos una gran mejora en el rendimiento.
 
 ![Node Replicated - Node](img/replicated_node.png)
 
-Desde el punto de vista del servidor, también vemos que el punto de quiebre se encuentra aproximadamente en el momento en que comienza el RampUp.
+Para este caso de estudio modificamos el dashboard para poder graficar ambas VMs por separado, es por eso que ahora tanto el CPU como el _load average_ tienen dos lineas, una por cada instancia. Es con este nuevo gráfico que podemos darnos una idea de como esta el _load balancer_ delegando el trabajo.
 
-Nuevamente el tiempo de respuesta del servidor tiene una forma lineal en relación al RampUp. Comienza constante, y al empezar a recibir más de un usuario, crece linealmente.
+Desde el punto de vista del servidor, también vemos que el punto de quiebre se encuentra aproximadamente en el momento en que comienza el `RampUp`.
+
+Nuevamente el tiempo de respuesta del servidor tiene una forma lineal en relación al `RampUp`. Comienza constante, y al empezar a recibir más de un usuario, crece linealmente.
 
 ![Node Replicated - Servicio Externo](img/replicated_python.png)
 
 En esta imagen, podemos apreciar que en el servicio externo todo funciona correctamente. Se recibieron todos los requests, se manejaron correctamente, y siempre se mantuvo constante el tiempo de demora de 750ms.
 
-Si bien replicar el servidor de node no es la solución al problema analizado en este trabajo, si tiene utilidades. Supongamos el sistema con cache que mostramos en el item anterior, si a ese sistema se le enviaran muchisimas requests por segundo es probable que el mismo colapse pero no por la cache, sino porque la unica replica de node que funciona alli no puede manejar tantos requests (antes de enviarselos al servicio externo). En ese caso, si seria util tener mas replicas de node para poder distribuir la carga entre ellas antes de enviar sus respectivos requests al servicio externo con cache en el medio.
+Si bien replicar el servidor de node no es la solución al problema analizado en este trabajo, si tiene utilidades. Supongamos el sistema con cache que mostramos en el item anterior, si a ese sistema se le enviaran muchisimas requests por segundo es probable que el mismo colapse pero no por la cache, sino porque la unica replica de node que funciona allí no puede manejar tantos requests (antes de enviarselos al servicio externo). En ese caso, sí sería útil tener más replicas de node para poder distribuir la carga entre ellas antes de enviar sus respectivos requests al servicio externo con cache en el medio.
+
+\newpage
 
 ## Conclusiones
 
-En el presente trabajo practico pudimos comprender y poner en practica diversos conceptos y herramientas como fueron servicios cloud, herramientas de monitoreo cloud, ansible, una gama de servicios de Azure, y demas.
+En el presente trabajo practico pudimos comprender y poner en practica diversos conceptos y herramientas como fueron servicios cloud, herramientas de monitoreo cloud, ansible, una gama de servicios de Azure, y demás.
 
 Nos fue posible entender que se nos estaba pidiendo y como lograrlo, ademas de formular hipotesis sobre los resultados que creimos que ibamos a obtener. Luego tuvimos la oportunidad de verificar dichas hipótesis contra con las metricas que obtuvimos, y conseguimos comprobar algunas y descartar otras.
 
-Pudimos comprender como resolver el problema planteado, lo cual resulto muy provechoso para entender como funcionan los servicios cloud y como se pueden utilizar para resolver problemas de esta naturaleza. Vimos que si bien uno podria suponer que agregar replicas de node parecia la forma de llevar a cabo el problema propuesto, lo que habia que hacer realmente era determinar donde estaba efectivamente el problema, que en este caso era el servicio externo, para poder dirimir asi la mejor forma de solucionar dicha situación.
+Pudimos comprender como resolver el problema planteado, lo cual resulto muy provechoso para entender como funcionan los servicios cloud y como se pueden utilizar para resolver problemas de esta naturaleza. Vimos que si bien uno podria suponer que agregar replicas de node parecia la forma de llevar a cabo el problema propuesto, lo que había que hacer realmente era determinar donde estaba efectivamente el problema, que en este caso era el servicio externo, para poder dirimir asi la mejor forma de solucionar dicha situación.
