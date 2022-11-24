@@ -129,7 +129,7 @@ Sin embargo, algo que se puede notar en el gráfico es que incluso a las `17:35h
 
 Si nos fijamos una franja horaria más extensa podemos confirmar que todos los pedidos se completaron, pero en el rango de 10 minutos en vez de 5. Con este dato faltante podemos terminar nuestro rompecabezas y concluir que el cuello de botella esta en el pedido entre `node` y `python`.
 
-Lo que asumimos que sucede es que `node` de manera asíncrona envía todos los pedidos que recibe al servidor externo, mientras que `python` por su lado los va encolando y resolviendo secuencialmente. Por esto mismo, 726 requests completados, a razón de al menos 750ms en dar la respuesta por cada uno resulta en (((726 * 750ms) / 1000) / 60s) = 9.075 minutos, que es la cota inferior de lo que tarda el servicio externo en responder a esa cantidad de requests. Por lo tanto, al sólo tener una instancia de node que se queda esperando la respuesta del servicio externo, para así responderle al cliente, todo el proceso se ve bastante demorado y casi todas las respuestas terminan superando los 10 segundos de _time out_ que marcamos.
+Lo que asumimos que sucede es que `node` de manera asíncrona envía todos los pedidos que recibe al servidor externo, mientras que `python` por su lado los va encolando y resolviendo secuencialmente. Por esto mismo, `726` requests completados, a razón de al menos `750ms` en dar la respuesta por cada uno resulta en `(((726 * 750ms) / 1000) / 60s)`, que es igual a `9.075` minutos. Esta es la cota inferior de lo que tarda el servicio externo en responder a esa cantidad de requests. Por lo tanto, al sólo tener una instancia de node que se queda esperando la respuesta del servicio externo, para así responderle al cliente, todo el proceso se ve bastante demorado y casi todas las respuestas terminan superando los 10 segundos de _time out_ que marcamos.
 
 \newpage
 
@@ -192,44 +192,29 @@ Por último, si vemos del lado de `python`, notamos que la cantidad de requests 
 
 La alarma todo esta bien nos muestra exáctamente lo que dijimos que mostraría: una línea constante con un corte. Atiende los primeros 10 pedidos, y luego deja de llamarse al `sleep` de `python`. Si tuviesemos el ambiente con 2 réplicas, acá veríamos dos líneas entrecortadas.
 
-Realizamos además, una segunda prueba donde enviamos 50 requests por segundo:
+Viendo que todo funciona correctamente, queremos subir la intensidad: realizamos una segunda prueba (de manera manual), pero con un `RampUp` de hasta 50 usuarios por segundo.
 
 ![Node Cache - Local](img/cache_50req_artillery.png)
 
-Según las métricas desde el lado de artillery, nuevamente todos los request fueron completados sin fallas. Si bien esta cantidad supera a la cantidad de requests de la primera prueba, vemos que esto no genera un problema para el sistema ya que puede manejarlos satisfactoriamente.
-
-![Node Cache - Servidor Node](img/cache_50req_node.png)
-
-<!-- Load average no debería iniciar siendo mayor también en este caso? -->
-
-![Node Cache - Servicio Externo](img/cache_50req_python.png)
-
-Observando del lado de `python`, vemos que sucede lo mismo que en la primer prueba de este mismo estudio ya que el tamaño de la cache sigue siendo 10. Entonces, al igual que antes, los requests que saldrían de `node` hacia `python` no se terminan haciendo porque su respuesta ya se encuentra en Redis.
-
-Podemos concluir para este estudio que el hecho de agregar una cache intermedia, al menos con el tamaño de cache propuesto (10), mitiga el cuello de botella que se generaba al recurrir al servicio externo.
+Nuevamente todos los requests son completados satisfactoriamente y se puede concluir que el hecho de agregar una cache intermedia, al menos con el tamaño de cache propuesto (10), mitiga el cuello de botella del caso anterior.
 
 \newpage
 
 ## Estudio 3 - Node Replicado x2
 
-Para este analisis se utilizaran dos instancias de `node`[^3] y el endpoint al que llamaremos será nuevamente `/remote`, ya que no queremos utilizar ningún tipo de cache en esta configuración.
+Para este analisis se utilizarán dos instancias de `node`[^3] y el endpoint al que llamaremos será nuevamente `/remote`, ya que no queremos utilizar ningún tipo de cache en esta configuración.
 
 [^3]: Originalmente teníamos pensado hacer un ambiente con 3 réplicas, pero nuestra suscripción actual de Azure solo nos permite tener 4 CPUs virtuales a la vez, y eso lo tenemos al límite: `mgmt`, `python`, `node1`, `node2`. ![VMS de azure](./img/vms.jpg)
 
 ![Hosts al tener tres instancias de node](./img/3node-hosts.png)
 
-Inicialmente lo que esperaríamos ver es un escenario más parecido al caso 1, donde efectivamente veamos que nuevamente se sobrecargue el sistema debido a la ausencia de cache, pero que ocurra más adelante en la prueba.
+Inicialmente lo que esperaríamos ver es un escenario más parecido al caso 1, donde efectivamente veamos que nuevamente se sobrecargue el sistema debido a la ausencia de cache. Sin embargo, en este escenario pretendemos que la falla de los pedidos ocurra más adelante: ya que se introduce una mejora al replicar el servidor de `node`, suponemos que ahora nuestro sistema va a tolerar más pedidos.
 
 ![Node Replicated - Artillery](img/replicated_artillery.png)
 
-Viendo inicialmente las métricas provistas por artillery, podemos ver que efectivamente se sobrecarga el sistema. Esto podemos notarlo en el gráfico de "Usuarios en escenario" ya que durante la fase de `RampUp` comienzan a verse usuarios fallidos hasta superar totalmente a los usuarios completados.
+Viendo inicialmente las métricas provistas por artillery, podemos ver que efectivamente se sobrecarga el sistema y que esto sucede pasado el minuto y medio (el punto de quiebre del estudio 1), y podemos confirmar que la cantidad de usuarios completados es superior al escenario 1.
 
-A su vez, en el gráfico de "Tiempo de respuesta" podemos ver cómo comienza a aumentar pronunciadamente en el mismo momento que comienza a sobrecargarse el sistema con usuarios.
-
-<!-- Revisar -->
-Respecto a los gráficos que habíamos observado cuando usamos una única instancia de node, podemos ver que la performance no mejora prácticamente nada. El motivo de esto es que el cuello de botella que genera la caída de rendimiento y la perdida de requests esta en el servicio externo! Por eso, a pesar de agregar una nueva instancia de node no vemos mejoras, porque el problema nunca fue nuestra instancia de node.
-
-Esta ultima afirmación constata con el caso anterior, donde vimos que al agregar una cache entre nuestra instancia de node y el servicio externo de python, sí vimos una gran mejora en el rendimiento.
+A su vez, en los tiempos de respuesta podemos ver cómo comienza a aumentar pronunciadamente en el mismo momento que comienza a sobrecargarse el sistema con usuarios.
 
 ![Node Replicated - Node](img/replicated_node.png)
 
@@ -241,7 +226,7 @@ Nuevamente el tiempo de respuesta del servidor tiene una forma lineal en relaci�
 
 ![Node Replicated - Servicio Externo](img/replicated_python.png)
 
-En esta imagen, podemos apreciar que en el servicio externo todo funciona correctamente. Se recibieron todos los requests, se manejaron correctamente, y siempre se mantuvo constante el tiempo de demora de 750ms.
+En esta imagen, podemos apreciar que en el servicio externo todo funciona correctamente. Se recibieron todos los requests, se manejaron correctamente, y siempre se mantuvo constante el tiempo de demora de 750ms. De la misma manera que lo vimos en el escenario uno, podemos ver como, incluso pasados los 5 minutos de corrida, sigue habiendo pedidos para procesar.
 
 Si bien replicar el servidor de node no es la solución al problema analizado en este trabajo, sí tiene utilidades. Supongamos el sistema con cache que mostramos en el item anterior, si a ese sistema se le enviaran muchísimas requests por segundo, es probable que el mismo colapse pero no por la cache, sino porque la única replica de node que funciona allí no puede manejar tantos requests (antes de enviárselos al servicio externo). En ese caso, sí sería útil tener más réplicas de node para poder distribuir la carga entre ellas antes de enviar sus respectivos requests al servicio externo con cache en el medio.
 
