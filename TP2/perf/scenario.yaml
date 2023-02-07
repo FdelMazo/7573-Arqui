@@ -1,0 +1,31 @@
+config:
+  target: "{{ $processEnvironment.TARGET }}"
+  plugins:
+    publish-metrics:
+      - type: datadog
+        apiKey: "{{ $processEnvironment.DATADOG_API_KEY }}"
+        prefix: "artillery."
+        tags:
+          - "test:{{ $processEnvironment.ENDPOINT }}"
+  phases:
+    - name: Pause
+      pause: 5
+    - name: WarmUp
+      duration: 60
+      arrivalRate: 1
+    - name: RampUp
+      duration: 60
+      arrivalRate: 1
+      rampTo: 5
+    - name: Plain
+      duration: 60
+      arrivalRate: 5
+    - name: CleanUp
+      duration: 60
+      arrivalRate: 5
+      rampTo: 1
+
+scenarios:
+  - flow:
+    - get:
+        url: "{{ $processEnvironment.ENDPOINT }}"

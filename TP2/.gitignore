@@ -1,0 +1,30 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files
+*.tfvars
+
+# Node
+node_modules/
+
+# Local files
+ip
+public_ip
+lb_dns
+redis_dns
+ddog_api_key
+python_host
+vmss_hosts
+mgmt_host
+base_url
+src.zip
+pubkey
+*.pem
+*.bak
+
+terraform.tfvars
+.terraform.lock.hcl

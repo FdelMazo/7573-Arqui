@@ -1,0 +1,6 @@
+mgmt_host
+python_host
+vmss_hosts
+ddog_api_key
+app.py
+requirements.txt

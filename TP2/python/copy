@@ -1,0 +1,7 @@
+OLD_DIR="$(pwd)"
+DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd $DIR
+
+cp app.py requirements.txt ../ansible/python
+
+cd $OLD_DIR

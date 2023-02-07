@@ -1,0 +1,51 @@
+---
+title: "Trabajo Práctico 2"
+subtitle: |
+  | Facultad de Ingeniería, Universidad de Buenos Aires
+  | [75.73] Arquitectura de Software
+date: 24 de Noviembre de 2022
+author: |
+  | Grupo "Ladrillo"
+  |
+  | \texttt{100029} del Mazo, Federico
+  | \texttt{102264} Hojman, Joaquin
+  | \texttt{97112}  Kasman, Lucía
+  | \texttt{97131}  Rombolá, Juan Pablo
+  | \texttt{103409} Schmidt, Agustina
+geometry: margin=2.5cm
+titlepage: true
+colorlinks: true
+
+# 1. Set-up header/footer
+# 2. Avoid the 'Figure 1: <Caption>' and just be caption
+# 3. Make `text` be in magenta
+# 4. Make ```lang be wrapped, with a nice left bar, etc -> You need to have at least one code block in the whole file
+# 5. Force all images to be placed [h] (avoid blank spaces)
+
+header-includes: |
+  \usepackage{fancyhdr, xcolor, listings, framed, fvextra, caption, float}
+  \pagestyle{fancy}
+  \fancyhead[L]{[75.73] Arquitectura de Software \\ TP2}
+  \fancyhead[R]{Grupo "Ladrillo" \\ 2022C2}
+
+  \captionsetup[figure]{labelformat=empty}
+
+  \let\OldTexttt\texttt
+  \renewcommand{\texttt}[1]{\OldTexttt{\color{magenta}{#1}}}
+
+  \let\oldshaded\Shaded
+  \newenvironment{leftbar_mod}{
+  \def\FrameCommand{{\color{magenta}\vrule width 1pt} \hspace{10pt}}
+  \MakeFramed {\advance\hsize-\width \FrameRestore}}
+  {\endMakeFramed}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  \renewenvironment{Shaded}{\begin{leftbar_mod}\begin{oldshaded}}{\end{oldshaded}\end{leftbar_mod}}
+
+  \let\origfigure\figure
+  \let\endorigfigure\endfigure
+  \renewenvironment{figure}[1][2] {
+      \expandafter\origfigure\expandafter[H]
+  } {
+      \endorigfigure
+  }
+---

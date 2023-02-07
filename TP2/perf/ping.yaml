@@ -1,0 +1,18 @@
+config:
+  target: "{{ $processEnvironment.TARGET }}"
+  plugins:
+    publish-metrics:
+      - type: datadog
+        apiKey: "{{ $processEnvironment.DATADOG_API_KEY }}"
+        prefix: "artillery."
+        tags:
+          - "test:ping"
+  phases:
+    - name: Ping
+      duration: 10
+      arrivalCount: 5
+
+scenarios:
+  - flow:
+    - get:
+        url: "/"
